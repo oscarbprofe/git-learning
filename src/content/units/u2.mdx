@@ -20,12 +20,54 @@ de tres "áreas":
    que quieres incluir en la próxima foto de la historia. Funciona como una lista de
    revisión: tú eliges qué entra.
 3. **Repositorio (`.git`):** la base de datos donde Git guarda la historia oficial del
-   proyecto, en forma de **commits** (instantáneas guardadas para siempre con un mensaje
-   y un autor).
+   proyecto, en forma de **commits**.
 
 <Callout type="info" title="Por qué existen tres áreas">
 Esta separación es lo que hace Git tan flexible. Puedes tener 10 archivos modificados y
 decidir empaquetar **sólo 3** en el próximo commit, dejando los otros para más tarde.
+</Callout>
+
+## ¿Qué es exactamente un commit?
+
+Un **commit** es una **foto del proyecto completo** en un momento dado, guardada de forma
+permanente en la historia. Cada vez que haces un commit, Git toma todo lo que tienes en el
+staging area y lo registra como un punto fijo al que **siempre** podrás volver.
+
+La mejor analogía es la de un **videojuego**: un commit es un *punto de guardado* (un
+"save"). Avanzas, guardas la partida, y si más adelante algo sale mal puedes volver a ese
+punto exacto sin perder nada. Tu proyecto va acumulando una cadena de estos puntos de
+guardado que cuentan, paso a paso, la historia de cómo se construyó.
+
+Cada commit guarda cuatro cosas:
+
+1. **Una instantánea del contenido** — el estado de todos los archivos que estaban
+   preparados, no solo "lo que cambió". Git puede reconstruir el proyecto tal cual estaba.
+2. **Un mensaje** — una frase que tú escribes explicando *qué* hiciste y *por qué*
+   (ej.: "Agrega validación del formulario de login"). Es lo que hace la historia legible.
+3. **Un autor y una fecha** — quién lo hizo y cuándo (de aquí la importancia de
+   `git config user.name` y `user.email` que viste en la Unidad 1).
+4. **Un identificador único (hash)** — un código como `a1b2c3d…` que nombra ese commit y
+   lo enlaza con el commit anterior, formando la cadena de la historia.
+
+<Callout type="tip" title="Un commit no es un &quot;guardar archivo&quot;">
+Guardar en VS Code (Ctrl+S) escribe los cambios en el **working directory**. Eso **no** es
+un commit. Un commit es un acto deliberado y aparte: tú decides qué incluir
+(`git add`) y luego sellas esa foto en la historia (`git commit`). Por eso puedes editar
+durante horas y hacer un único commit cuando el trabajo está listo.
+</Callout>
+
+> **Regla de oro:** un commit debería representar **un cambio con sentido propio**
+> (una funcionalidad, una corrección), no "todo lo que hice hoy". Commits pequeños y
+> enfocados hacen que la historia sea fácil de leer y de deshacer.
+
+<Callout type="info" title="¿Por qué se llama &quot;commit&quot;?">
+La palabra viene del latín *committere* ("confiar, entregar, poner en común") y en inglés
+**to commit** significa *comprometerse* o *dejar algo registrado de forma definitiva*: por
+eso un juez "comete a juicio" o uno se "compromete" (*makes a commitment*) con una
+decisión. El término llegó a Git desde las **bases de datos**, donde hacer *commit* es
+**confirmar una operación** para que quede grabada de forma permanente y ya no se pueda
+perder. Cuando haces `git commit`, le dices a Git: *"este conjunto de cambios es definitivo,
+guárdalo en la historia"* — te **comprometes** con esa foto del proyecto.
 </Callout>
 
 ## Crear el repositorio: `git init`

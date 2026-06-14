@@ -6,21 +6,27 @@ import SaveStatus from '../islands/SaveStatus.tsx';
 ---
 
 <header class="site-header">
-  <div class="container header-inner">
+  <div class="header-inner">
+    <!-- Izquierda -->
     <a href="/" class="brand" aria-label="Inicio — Git Challenge Duoc UC">
       <DuocLogo size="sm" />
-      <span class="brand-sep" aria-hidden="true">/</span>
-      <span class="brand-title">Git Challenge</span>
     </a>
 
-    <HeaderProgress client:load />
+    <!-- Centro: barra de progreso -->
+    <div class="header-center">
+      <HeaderProgress client:load />
+    </div>
 
-    <SaveStatus client:load />
-
-    <UserMenu client:load />
+    <!-- Derecha: estado de guardado + usuario + pestaña -->
+    <div class="header-right">
+      <SaveStatus client:load />
+      <UserMenu client:load />
+      <!-- Pestaña amarilla con corte diagonal, eco del bloque "ADMISIÓN" de duoc.cl -->
+      <a href="/" class="brand-tab" aria-label="Inicio — Git Challenge">
+        <span class="brand-title">Git Challenge</span>
+      </a>
+    </div>
   </div>
-  <!-- Detalle amarillo a la derecha, eco del navbar oficial duoc.cl -->
-  <div class="header-accent" aria-hidden="true"></div>
 </header>
 
 <style>
@@ -35,60 +41,105 @@ import SaveStatus from '../islands/SaveStatus.tsx';
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
   }
 
+  /* Full-bleed + 3 columnas: izquierda | centro | derecha.
+   * 1fr auto 1fr garantiza que el centro quede centrado respecto a la pantalla,
+   * sin importar el ancho del logo o del nombre de usuario. */
   .header-inner {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    gap: var(--sp-5);
-    flex-wrap: wrap;
+    width: 100%;
+    column-gap: var(--sp-4);
     position: relative;
     z-index: 2;
   }
 
   .brand {
+    grid-column: 1;
+    justify-self: start;
     display: inline-flex;
     align-items: center;
     gap: var(--sp-3);
     text-decoration: none;
     color: var(--duoc-blanco);
+    padding-left: var(--sp-5);
   }
 
-  .brand-sep {
-    color: var(--duoc-gris-claro);
-    font-weight: 300;
-    font-size: 1.6rem;
-    opacity: 0.6;
+  .header-center {
+    grid-column: 2;
+    justify-self: center;
+    display: flex;
+    width: min(380px, 38vw);
+  }
+
+  .header-right {
+    grid-column: 3;
+    justify-self: end;
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    min-width: 0;
+  }
+
+  /* Pestaña amarilla flush al borde derecho, alto completo y con el borde
+   * izquierdo cortado en diagonal (terminación en punta del navbar duoc.cl). */
+  .brand-tab {
+    align-self: stretch;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    text-decoration: none;
+    background: var(--duoc-amarillo);
+    color: var(--duoc-negro);
+    padding: var(--sp-4) var(--sp-5) var(--sp-4) calc(var(--sp-5) + 26px);
+    /* anula el padding vertical del header → ocupa todo el alto */
+    margin: calc(-1 * var(--sp-4)) 0;
+    margin-left: var(--sp-3);
+    clip-path: polygon(26px 0, 100% 0, 100% 100%, 0 100%);
+    transition: background 0.15s ease;
+  }
+
+  .brand-tab:hover {
+    background: var(--duoc-amarillo-oscuro);
   }
 
   .brand-title {
     font-family: var(--font-serif);
     font-weight: 700;
     font-size: 1.1rem;
-    color: var(--duoc-blanco);
+    color: var(--duoc-negro);
     letter-spacing: -0.01em;
+    white-space: nowrap;
   }
 
-  /* Banda amarilla al borde derecho del header — replica el detalle
-   * "ADMISIÓN" del navbar oficial duoc.cl como acento de marca. */
-  .header-accent {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 14px;
-    background: var(--duoc-amarillo);
-    pointer-events: none;
-  }
-
-  @media (max-width: 640px) {
+  /* En pantallas medianas/chicas, el progreso baja a una segunda fila full-width
+   * para que no choque con el logo ni el nombre de usuario. */
+  @media (max-width: 768px) {
     .header-inner {
-      gap: var(--sp-3);
+      grid-template-columns: auto 1fr;
+      row-gap: var(--sp-2);
     }
-    .brand-sep,
+    .brand {
+      grid-column: 1;
+      grid-row: 1;
+      padding-left: var(--sp-4);
+    }
+    .header-right {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    .header-center {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      width: 100%;
+      padding: 0 var(--sp-4);
+    }
+    .brand-tab {
+      padding: var(--sp-3) var(--sp-4) var(--sp-3) calc(var(--sp-4) + 20px);
+      clip-path: polygon(20px 0, 100% 0, 100% 100%, 0 100%);
+    }
     .brand-title {
-      display: none;
-    }
-    .header-accent {
-      width: 8px;
+      font-size: 0.95rem;
     }
   }
 </style>

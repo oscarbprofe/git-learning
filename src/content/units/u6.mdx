@@ -82,7 +82,11 @@ tenía la versión antigua, sus repos quedan desincronizados. Usa `revert` en su
 <span class="prompt">$</span> git fetch origin             <span class="comment"># trae cambios sin aplicarlos</span>
 <span class="prompt">$</span> git log origin/main          <span class="comment"># revisas qué llegó</span>
 <span class="prompt">$</span> git pull                     <span class="comment"># si te gusta, mezclas</span>
+<span class="prompt">$</span> git pull origin main         <span class="comment"># forma explícita: indica remoto y rama</span>
 </TerminalBlock>
+
+`git pull` a secas funciona cuando tu rama ya tiene tracking; la forma explícita
+`git pull origin <rama>` indica de dónde traer y sirve siempre.
 
 ## Autenticación con GitHub
 
@@ -112,6 +116,15 @@ solos a dónde apuntar.
 </TerminalBlock>
 
 `git push -u origin <rama>` la primera vez es lo que crea el tracking.
+
+Para ver las ramas que existen en el remoto (no solo las locales), usa el flag `-r`
+(*remotes*):
+
+<TerminalBlock>
+<span class="prompt">$</span> git branch          <span class="comment"># ramas locales</span>
+<span class="prompt">$</span> git branch -r       <span class="comment"># ramas remotas (origin/main, origin/feature-x...)</span>
+<span class="prompt">$</span> git branch -a       <span class="comment"># todas: locales + remotas</span>
+</TerminalBlock>
 
 ## Ejemplo: el ciclo diario
 

@@ -31,7 +31,7 @@
     {
       "id": "u6-e4",
       "prompt": "Sincroniza tu rama actual con los últimos cambios del remoto.",
-      "scenario": "Tu compañera pushea**ron** cambios y necesitas traerlos a tu copia local. Usa el comando más usado del día a día.",
+      "scenario": "Tu compañera pusheó cambios y necesitas traerlos a tu copia local. Usa el comando más usado del día a día.",
       "accept": ["^git pull$"],
       "hint": "Combina fetch + merge en un solo paso.",
       "expectedHint": "git pull",

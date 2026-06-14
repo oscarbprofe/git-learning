@@ -25,6 +25,16 @@ Ya viste `git log` en la unidad anterior. Ahora aprenderás a sacarle provecho.
 `--oneline` muestra cada commit en una sola línea (hash corto + mensaje). Ideal para ver
 de un vistazo la historia.
 
+<Callout type="info" title="¿Qué es HEAD?">
+¿Viste el `(HEAD -> main)` junto al primer commit? **HEAD** es un puntero que marca el
+commit en el que estás parado **ahora mismo** — el "tú estás aquí" de tu historia.
+Normalmente HEAD apunta a tu rama actual (aquí `main`), y la rama apunta a su último
+commit. Por eso, al hacer un nuevo commit, HEAD y la rama avanzan juntos a esa nueva foto.
+
+Más adelante usarás HEAD para moverte por la historia. Un par de atajos que verás seguido:
+`HEAD` (commit actual), `HEAD~1` (el commit anterior), `HEAD~2` (dos atrás), y así.
+</Callout>
+
 ### Limitar resultados
 
 <TerminalBlock>
