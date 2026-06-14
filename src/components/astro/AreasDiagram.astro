@@ -1,0 +1,52 @@
+---
+/** Diagrama U2: las tres áreas de Git y el flujo add → commit. Colores de marca. */
+---
+<figure class="diagram">
+  <svg viewBox="0 0 640 210" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>Las tres áreas de Git</title>
+    <desc>
+      Los cambios pasan del working directory al staging area con git add, y del staging
+      area al repositorio con git commit.
+    </desc>
+    <defs>
+      <marker id="ad-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="var(--duoc-azul-escuela-oscuro)"></path>
+      </marker>
+    </defs>
+
+    <!-- Cajas -->
+    <g font-size="14" font-weight="700">
+      <rect x="20" y="70" width="170" height="78" rx="8" fill="#eef3fc" stroke="var(--duoc-azul-escuela)" stroke-width="2"></rect>
+      <text x="105" y="103" text-anchor="middle" fill="var(--duoc-azul-escuela-oscuro)">Working</text>
+      <text x="105" y="122" text-anchor="middle" fill="var(--duoc-azul-escuela-oscuro)">directory</text>
+
+      <rect x="235" y="70" width="170" height="78" rx="8" fill="#fcf3da" stroke="var(--duoc-amarillo-oscuro)" stroke-width="2"></rect>
+      <text x="320" y="103" text-anchor="middle" fill="#7a5a10">Staging</text>
+      <text x="320" y="122" text-anchor="middle" fill="#7a5a10">area</text>
+
+      <rect x="450" y="70" width="170" height="78" rx="8" fill="#e9eaec" stroke="var(--duoc-gris-oscuro)" stroke-width="2"></rect>
+      <text x="535" y="103" text-anchor="middle" fill="var(--duoc-gris-oscuro)">Repositorio</text>
+      <text x="535" y="122" text-anchor="middle" fill="var(--duoc-gris-oscuro)">(.git)</text>
+    </g>
+
+    <!-- Flechas + comandos -->
+    <g font-size="13" font-weight="700" font-family="var(--font-mono)" fill="var(--duoc-azul-escuela-oscuro)">
+      <line x1="192" y1="109" x2="233" y2="109" stroke="var(--duoc-azul-escuela-oscuro)" stroke-width="2.5" marker-end="url(#ad-arrow)"></line>
+      <text x="212" y="56" text-anchor="middle">git add</text>
+
+      <line x1="407" y1="109" x2="448" y2="109" stroke="var(--duoc-azul-escuela-oscuro)" stroke-width="2.5" marker-end="url(#ad-arrow)"></line>
+      <text x="427" y="56" text-anchor="middle">git commit</text>
+    </g>
+  </svg>
+  <figcaption>
+    Editas en el <strong>working directory</strong>, preparas con <code>git add</code> en el
+    <strong>staging area</strong> y sellas con <code>git commit</code> en el <strong>repositorio</strong>.
+  </figcaption>
+</figure>
+
+<style>
+  .diagram { margin: var(--sp-5) 0; padding: var(--sp-4); background: var(--duoc-gris-fondo); border-radius: var(--radius-md); }
+  .diagram svg { display: block; width: 100%; height: auto; max-width: 640px; margin: 0 auto; }
+  .diagram figcaption { margin-top: var(--sp-3); text-align: center; font-size: var(--fs-sm); color: var(--color-text-soft); }
+  .diagram code { font-family: var(--font-mono); font-size: 0.85em; }
+</style>

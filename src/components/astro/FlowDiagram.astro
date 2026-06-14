@@ -1,0 +1,61 @@
+---
+/** Diagrama U7: GitHub Flow — secuencia rama → commits → push → PR → merge → borrar. */
+const steps = [
+  'Crear rama',
+  'Commits',
+  'Push',
+  'Pull Request',
+  'Review & merge',
+  'Borrar rama',
+];
+---
+<figure class="diagram">
+  <svg viewBox="0 0 700 130" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>GitHub Flow</title>
+    <desc>
+      Ciclo de trabajo: crear rama, hacer commits, push, abrir Pull Request, revisar y
+      mergear, y borrar la rama.
+    </desc>
+    <defs>
+      <marker id="fd-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="var(--duoc-azul-escuela-oscuro)"></path>
+      </marker>
+    </defs>
+    {steps.map((label, i) => {
+      const x = 12 + i * 114;
+      const isMerge = i === 4;
+      return (
+        <g>
+          <rect
+            x={x} y="48" width="100" height="44" rx="22"
+            fill={isMerge ? '#fcf3da' : '#eef3fc'}
+            stroke={isMerge ? 'var(--duoc-amarillo-oscuro)' : 'var(--duoc-azul-escuela)'}
+            stroke-width="2"
+          ></rect>
+          <text
+            x={x + 50} y="74" text-anchor="middle" font-size="12.5" font-weight="700"
+            fill={isMerge ? '#7a5a10' : 'var(--duoc-azul-escuela-oscuro)'}
+          >{label}</text>
+          {i < steps.length - 1 && (
+            <line
+              x1={x + 100} y1="70" x2={x + 113} y2="70"
+              stroke="var(--duoc-azul-escuela-oscuro)" stroke-width="2.5"
+              marker-end="url(#fd-arrow)"
+            ></line>
+          )}
+        </g>
+      );
+    })}
+  </svg>
+  <figcaption>
+    El ciclo de GitHub Flow: cada cambio nace en una rama, se propone con un Pull Request,
+    se revisa, se mergea a <code>main</code> y la rama se elimina.
+  </figcaption>
+</figure>
+
+<style>
+  .diagram { margin: var(--sp-5) 0; padding: var(--sp-4); background: var(--duoc-gris-fondo); border-radius: var(--radius-md); }
+  .diagram svg { display: block; width: 100%; height: auto; max-width: 700px; margin: 0 auto; }
+  .diagram figcaption { margin-top: var(--sp-3); text-align: center; font-size: var(--fs-sm); color: var(--color-text-soft); }
+  .diagram code { font-family: var(--font-mono); font-size: 0.85em; }
+</style>

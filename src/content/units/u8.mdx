@@ -8,6 +8,7 @@ points: 12
 
 import TerminalBlock from '../../components/astro/TerminalBlock.astro';
 import Callout from '../../components/astro/Callout.astro';
+import RebaseDiagram from '../../components/astro/RebaseDiagram.astro';
 
 ## Última unidad: del Git correcto al Git pro
 
@@ -28,6 +29,8 @@ distinto: **mueve** los commits de tu rama para que parezca que partieron desde 
 </TerminalBlock>
 
 Resultado: historia **lineal**, sin commits de merge, más fácil de leer.
+
+<RebaseDiagram />
 
 <Callout type="warn" title="La regla de oro del rebase">
 **Nunca hagas rebase sobre commits que ya compartiste (push) a una rama compartida.**

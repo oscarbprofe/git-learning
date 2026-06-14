@@ -1,0 +1,58 @@
+---
+/** Diagrama U5: three-way merge — feature se fusiona a main con un commit de merge. */
+---
+<figure class="diagram">
+  <svg viewBox="0 0 640 270" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>Fusionar una rama con git merge</title>
+    <desc>
+      main y feature avanzaron en paralelo; git merge crea un commit de merge en main con dos
+      padres: el último commit de cada rama.
+    </desc>
+
+    <!-- Leyenda -->
+    <rect x="30" y="18" width="74" height="30" rx="6" fill="#d9e4fa" stroke="var(--duoc-azul-escuela-oscuro)" stroke-width="2"></rect>
+    <text x="67" y="38" text-anchor="middle" font-size="13" font-weight="700" fill="var(--duoc-azul-escuela-oscuro)">main</text>
+    <rect x="118" y="18" width="138" height="30" rx="6" fill="#fcefce" stroke="var(--duoc-amarillo-oscuro)" stroke-width="2"></rect>
+    <text x="187" y="38" text-anchor="middle" font-size="13" font-weight="700" fill="#7a5a10">feature/login</text>
+
+    <!-- Línea main -->
+    <line x1="70" y1="110" x2="500" y2="110" stroke="var(--duoc-gris-oscuro)" stroke-width="3"></line>
+    <line x1="540" y1="110" x2="600" y2="110" stroke="var(--duoc-gris-claro)" stroke-width="3" stroke-dasharray="2 8" stroke-linecap="round"></line>
+
+    <!-- Bifurcación y línea feature -->
+    <path d="M70 110 C 70 150, 90 180, 120 180" fill="none" stroke="var(--duoc-gris-oscuro)" stroke-width="3"></path>
+    <line x1="120" y1="180" x2="360" y2="180" stroke="var(--duoc-gris-oscuro)" stroke-width="3"></line>
+    <!-- Merge: de feature vuelve a main -->
+    <path d="M360 180 C 460 180, 470 110, 520 110" fill="none" stroke="var(--duoc-amarillo-oscuro)" stroke-width="3"></path>
+
+    <!-- Commits main -->
+    <g font-size="12" font-weight="700">
+      <circle cx="70"  cy="110" r="14" fill="var(--duoc-azul-escuela)" stroke="var(--duoc-azul-escuela-oscuro)" stroke-width="2.5"></circle>
+      <circle cx="230" cy="110" r="14" fill="var(--duoc-azul-escuela)" stroke="var(--duoc-azul-escuela-oscuro)" stroke-width="2.5"></circle>
+      <!-- Commit de merge -->
+      <circle cx="520" cy="110" r="16" fill="var(--duoc-azul-escuela-claro)" stroke="var(--duoc-azul-escuela-oscuro)" stroke-width="3"></circle>
+      <text x="520" y="114" text-anchor="middle" font-size="11" fill="var(--duoc-azul-escuela-oscuro)">M</text>
+    </g>
+    <!-- Commits feature -->
+    <g>
+      <circle cx="160" cy="180" r="14" fill="var(--duoc-amarillo)" stroke="var(--duoc-amarillo-oscuro)" stroke-width="2.5"></circle>
+      <circle cx="300" cy="180" r="14" fill="var(--duoc-amarillo)" stroke="var(--duoc-amarillo-oscuro)" stroke-width="2.5"></circle>
+    </g>
+
+    <!-- Etiqueta merge -->
+    <text x="520" y="70" text-anchor="middle" font-size="12.5" fill="var(--color-text-soft)">commit de merge</text>
+    <text x="520" y="86" text-anchor="middle" font-size="12.5" fill="var(--color-text-soft)">(2 padres)</text>
+    <text x="300" y="232" text-anchor="middle" font-size="12.5" font-family="var(--font-mono)" fill="var(--duoc-gris-oscuro)">git merge feature/login</text>
+  </svg>
+  <figcaption>
+    Cuando ambas ramas avanzaron, <code>git merge</code> crea un <strong>commit de merge</strong>
+    con dos padres y une las historias.
+  </figcaption>
+</figure>
+
+<style>
+  .diagram { margin: var(--sp-5) 0; padding: var(--sp-4); background: var(--duoc-gris-fondo); border-radius: var(--radius-md); }
+  .diagram svg { display: block; width: 100%; height: auto; max-width: 640px; margin: 0 auto; }
+  .diagram figcaption { margin-top: var(--sp-3); text-align: center; font-size: var(--fs-sm); color: var(--color-text-soft); }
+  .diagram code { font-family: var(--font-mono); font-size: 0.85em; }
+</style>

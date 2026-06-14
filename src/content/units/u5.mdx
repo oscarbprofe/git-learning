@@ -8,6 +8,8 @@ points: 14
 
 import TerminalBlock from '../../components/astro/TerminalBlock.astro';
 import Callout from '../../components/astro/Callout.astro';
+import BranchDiagram from '../../components/astro/BranchDiagram.astro';
+import MergeDiagram from '../../components/astro/MergeDiagram.astro';
 
 ## ¿Qué es una rama?
 
@@ -35,6 +37,15 @@ Técnicamente, una rama es un **puntero** a un commit. Cuando haces commit en un
 el puntero se mueve automáticamente al nuevo commit. Por eso crear ramas en Git es
 súper barato (no copia archivos).
 </Callout>
+
+Visualmente, crear una rama y trabajar en ella se ve así: desde un commit de `main` nace
+una rama nueva (aquí `feature/login`) que recibe sus propios commits **en paralelo**,
+mientras `main` se mantiene estable.
+
+<BranchDiagram />
+
+Más adelante, cuando la feature esté lista, esa rama se **fusiona** de vuelta a `main`
+(lo verás en "Fusionar ramas: `git merge`").
 
 ## Crear, listar y cambiar de rama
 
@@ -79,6 +90,8 @@ de merge**.
 
 Ocurre cuando ambas ramas avanzaron en paralelo. Git crea un **commit de merge** especial
 que tiene **dos padres**: el último commit de cada rama. Aquí pueden aparecer conflictos.
+
+<MergeDiagram />
 
 ## Resolver conflictos
 

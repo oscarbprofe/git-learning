@@ -1,0 +1,60 @@
+---
+/** Diagrama U4: reset (reescribe historia) vs revert (agrega commit inverso). */
+---
+<figure class="diagram">
+  <svg viewBox="0 0 640 320" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>reset vs revert</title>
+    <desc>
+      reset mueve HEAD a un commit anterior y deja fuera los posteriores. revert agrega un
+      commit nuevo que aplica el cambio inverso, conservando toda la historia.
+    </desc>
+
+    <!-- ===== RESET ===== -->
+    <text x="20" y="34" font-size="15" font-weight="700" fill="var(--duoc-gris-oscuro)">git reset --hard B</text>
+    <line x1="70" y1="75" x2="250" y2="75" stroke="var(--duoc-gris-oscuro)" stroke-width="3"></line>
+    <line x1="296" y1="75" x2="430" y2="75" stroke="var(--duoc-gris-claro)" stroke-width="3" stroke-dasharray="3 7"></line>
+    <g font-size="13" font-weight="700" font-family="var(--font-mono)">
+      <circle cx="70"  cy="75" r="15" fill="var(--duoc-azul-escuela)" stroke="var(--duoc-azul-escuela-oscuro)" stroke-width="2.5"></circle>
+      <text x="70" y="110" text-anchor="middle" fill="var(--duoc-gris-oscuro)">A</text>
+      <circle cx="180" cy="75" r="15" fill="var(--duoc-azul-escuela)" stroke="var(--duoc-azul-escuela-oscuro)" stroke-width="2.5"></circle>
+      <text x="180" y="110" text-anchor="middle" fill="var(--duoc-gris-oscuro)">B</text>
+      <circle cx="320" cy="75" r="15" fill="var(--duoc-blanco)" stroke="var(--duoc-gris-claro)" stroke-width="2.5" stroke-dasharray="3 4"></circle>
+      <text x="320" y="110" text-anchor="middle" fill="var(--duoc-gris-claro)">C</text>
+    </g>
+    <g font-size="13" font-weight="700">
+      <rect x="138" y="22" width="84" height="26" rx="6" fill="#fcf3da" stroke="var(--duoc-amarillo-oscuro)" stroke-width="2"></rect>
+      <text x="180" y="40" text-anchor="middle" fill="#7a5a10">HEAD</text>
+      <line x1="180" y1="50" x2="180" y2="58" stroke="var(--duoc-amarillo-oscuro)" stroke-width="2.5"></line>
+    </g>
+    <text x="320" y="132" text-anchor="middle" font-size="12" fill="var(--color-text-soft)">C queda fuera de la historia</text>
+
+    <!-- separador -->
+    <line x1="20" y1="170" x2="620" y2="170" stroke="var(--color-border)" stroke-width="1"></line>
+
+    <!-- ===== REVERT ===== -->
+    <text x="20" y="206" font-size="15" font-weight="700" fill="var(--duoc-gris-oscuro)">git revert B</text>
+    <line x1="70" y1="250" x2="500" y2="250" stroke="var(--duoc-gris-oscuro)" stroke-width="3"></line>
+    <g font-size="13" font-weight="700" font-family="var(--font-mono)">
+      <circle cx="70"  cy="250" r="15" fill="var(--duoc-azul-escuela)" stroke="var(--duoc-azul-escuela-oscuro)" stroke-width="2.5"></circle>
+      <text x="70" y="285" text-anchor="middle" fill="var(--duoc-gris-oscuro)">A</text>
+      <circle cx="200" cy="250" r="15" fill="var(--duoc-azul-escuela)" stroke="var(--duoc-azul-escuela-oscuro)" stroke-width="2.5"></circle>
+      <text x="200" y="285" text-anchor="middle" fill="var(--duoc-gris-oscuro)">B</text>
+      <circle cx="330" cy="250" r="15" fill="var(--duoc-azul-escuela)" stroke="var(--duoc-azul-escuela-oscuro)" stroke-width="2.5"></circle>
+      <text x="330" y="285" text-anchor="middle" fill="var(--duoc-gris-oscuro)">C</text>
+      <circle cx="470" cy="250" r="15" fill="var(--duoc-amarillo)" stroke="var(--duoc-amarillo-oscuro)" stroke-width="2.5"></circle>
+      <text x="470" y="285" text-anchor="middle" fill="var(--duoc-gris-oscuro)">B'</text>
+    </g>
+    <text x="470" y="222" text-anchor="middle" font-size="12" fill="var(--color-text-soft)">deshace B</text>
+  </svg>
+  <figcaption>
+    <strong>reset</strong> reescribe la historia (mueve <code>HEAD</code> atrás).
+    <strong>revert</strong> conserva todo y agrega <code>B'</code>, un commit que deshace <code>B</code>.
+  </figcaption>
+</figure>
+
+<style>
+  .diagram { margin: var(--sp-5) 0; padding: var(--sp-4); background: var(--duoc-gris-fondo); border-radius: var(--radius-md); }
+  .diagram svg { display: block; width: 100%; height: auto; max-width: 640px; margin: 0 auto; }
+  .diagram figcaption { margin-top: var(--sp-3); text-align: center; font-size: var(--fs-sm); color: var(--color-text-soft); }
+  .diagram code { font-family: var(--font-mono); font-size: 0.85em; }
+</style>

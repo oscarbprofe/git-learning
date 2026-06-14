@@ -1,0 +1,82 @@
+---
+/** Diagrama: crear una rama de feature y hacer commits en paralelo a `main`.
+ * Colores de marca Duoc UC. Pensado para la Unidad 5 (¿Qué es una rama?). */
+---
+
+<figure class="branch-diagram">
+  <svg viewBox="0 0 620 300" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>Crear una rama y hacer commits en ella</title>
+    <desc>
+      La rama main avanza con sus commits. Desde uno de ellos nace la rama feature/login,
+      que recibe sus propios commits en paralelo sin afectar a main.
+    </desc>
+
+    <defs>
+      <marker id="bd-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="var(--duoc-gris)"></path>
+      </marker>
+    </defs>
+
+    <!-- Leyenda -->
+    <rect x="30" y="18" width="78" height="32" rx="6" fill="#d9e4fa" stroke="var(--duoc-azul-escuela-oscuro)" stroke-width="2"></rect>
+    <text x="69" y="39" text-anchor="middle" font-size="14" font-weight="700" fill="var(--duoc-azul-escuela-oscuro)">main</text>
+
+    <rect x="124" y="18" width="138" height="32" rx="6" fill="#fcefce" stroke="var(--duoc-amarillo-oscuro)" stroke-width="2"></rect>
+    <text x="193" y="39" text-anchor="middle" font-size="14" font-weight="700" fill="#7a5a10">feature/login</text>
+
+    <!-- Línea main -->
+    <line x1="60" y1="160" x2="470" y2="160" stroke="var(--duoc-gris-oscuro)" stroke-width="3"></line>
+    <line x1="470" y1="160" x2="560" y2="160" stroke="var(--duoc-gris-claro)" stroke-width="3" stroke-dasharray="2 8" stroke-linecap="round"></line>
+
+    <!-- Curva de bifurcación: del 1er commit de main baja a la rama feature -->
+    <path d="M60 160 C 60 205, 85 235, 120 235" fill="none" stroke="var(--duoc-gris-oscuro)" stroke-width="3"></path>
+
+    <!-- Línea feature -->
+    <line x1="120" y1="235" x2="500" y2="235" stroke="var(--duoc-gris-oscuro)" stroke-width="3"></line>
+    <line x1="500" y1="235" x2="560" y2="235" stroke="var(--duoc-gris-claro)" stroke-width="3" stroke-dasharray="2 8" stroke-linecap="round"></line>
+
+    <!-- Etiqueta del punto de bifurcación -->
+    <text x="150" y="120" font-size="12.5" fill="var(--duoc-gris)" font-style="italic">git switch -c feature/login</text>
+    <line x1="150" y1="128" x2="92" y2="190" stroke="var(--duoc-gris-claro)" stroke-width="1.5" marker-end="url(#bd-arrow)"></line>
+
+    <!-- Commits main (azul) -->
+    <circle cx="60"  cy="160" r="13" fill="var(--duoc-azul-escuela)" stroke="var(--duoc-azul-escuela-oscuro)" stroke-width="2.5"></circle>
+    <circle cx="230" cy="160" r="13" fill="var(--duoc-azul-escuela)" stroke="var(--duoc-azul-escuela-oscuro)" stroke-width="2.5"></circle>
+    <circle cx="400" cy="160" r="13" fill="var(--duoc-azul-escuela)" stroke="var(--duoc-azul-escuela-oscuro)" stroke-width="2.5"></circle>
+
+    <!-- Commits feature (amarillo) -->
+    <circle cx="160" cy="235" r="13" fill="var(--duoc-amarillo)" stroke="var(--duoc-amarillo-oscuro)" stroke-width="2.5"></circle>
+    <circle cx="290" cy="235" r="13" fill="var(--duoc-amarillo)" stroke="var(--duoc-amarillo-oscuro)" stroke-width="2.5"></circle>
+    <circle cx="440" cy="235" r="13" fill="var(--duoc-amarillo)" stroke="var(--duoc-amarillo-oscuro)" stroke-width="2.5"></circle>
+  </svg>
+  <figcaption>
+    Desde un commit de <code>main</code> nace <code>feature/login</code>; sus commits avanzan
+    en paralelo sin tocar la versión estable.
+  </figcaption>
+</figure>
+
+<style>
+  .branch-diagram {
+    margin: var(--sp-5) 0;
+    padding: var(--sp-4);
+    background: var(--duoc-gris-fondo);
+    border-radius: var(--radius-md);
+  }
+  .branch-diagram svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 620px;
+    margin: 0 auto;
+  }
+  .branch-diagram figcaption {
+    margin-top: var(--sp-3);
+    text-align: center;
+    font-size: var(--fs-sm);
+    color: var(--color-text-soft);
+  }
+  .branch-diagram code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+  }
+</style>

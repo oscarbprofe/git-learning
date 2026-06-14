@@ -111,7 +111,15 @@ git-challenge/
 
 ### Fase 6 — Contenido completo (2.5 días, paralelizable desde Fase 4)
 - [ ] Redactar unidades 2–8 (MDX + JSON) según currículum §5 del spec: teoría, ejemplo básico, caso real, 31 ejercicios y 42 preguntas en total, sumando exactamente 100 puntos.
-- [ ] Diagramas SVG: flujo de áreas de Git (unidad 2), grafo de commits (3), reset/revert (4), ramas y merge (5), remoto (6), GitHub Flow (7), rebase (8) — en colores de marca.
+- [x] Diagramas SVG por unidad, en colores de marca (azul Escuela + amarillo), respetando la regla de no adelantar conceptos:
+  - [x] **U2 — `AreasDiagram.astro`**: tres áreas y flujo `git add` → `git commit`.
+  - [x] **U3 — `HistoryDiagram.astro`**: historia lineal de commits con `HEAD → main`.
+  - [x] **U4 — `UndoDiagram.astro`**: `reset` (reescribe historia) vs `revert` (commit inverso).
+  - [x] **U5 — `BranchDiagram.astro`**: crear rama `feature/login` y commits en paralelo (sin tags ni merge en el gráfico).
+  - [x] **U5 — `MergeDiagram.astro`**: three-way merge con commit de merge (dos padres).
+  - [x] **U6 — `RemoteDiagram.astro`**: local ↔ `origin` (push / pull / fetch / clone).
+  - [x] **U7 — `FlowDiagram.astro`**: GitHub Flow (rama → commits → push → PR → review/merge → borrar).
+  - [x] **U8 — `RebaseDiagram.astro`**: rebase reaplicando commits sobre `main` (historia lineal).
 - [ ] Revisión pedagógica: dificultad creciente, lenguaje primer año, consistencia de terminología.
 - **Hito:** las 8 unidades completas; total de puntos = 100 verificado en build (assert en `config.ts`).
 

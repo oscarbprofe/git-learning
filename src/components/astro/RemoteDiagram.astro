@@ -1,0 +1,49 @@
+---
+/** Diagrama U6: repositorio local <-> remoto (origin) con push, pull/fetch y clone. */
+---
+<figure class="diagram">
+  <svg viewBox="0 0 640 250" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>Repositorio local y remoto</title>
+    <desc>
+      Tu repositorio local se sincroniza con origin (GitHub): push sube commits, pull y fetch
+      los bajan, clone crea la copia inicial.
+    </desc>
+    <defs>
+      <marker id="rd-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="var(--duoc-gris-oscuro)"></path>
+      </marker>
+    </defs>
+
+    <!-- Cajas -->
+    <rect x="40" y="80" width="220" height="100" rx="10" fill="#eef3fc" stroke="var(--duoc-azul-escuela)" stroke-width="2.5"></rect>
+    <text x="150" y="124" text-anchor="middle" font-size="15" font-weight="700" fill="var(--duoc-azul-escuela-oscuro)">Tu repositorio</text>
+    <text x="150" y="146" text-anchor="middle" font-size="15" font-weight="700" fill="var(--duoc-azul-escuela-oscuro)">local</text>
+
+    <rect x="380" y="80" width="220" height="100" rx="10" fill="#e9eaec" stroke="var(--duoc-gris-oscuro)" stroke-width="2.5"></rect>
+    <text x="490" y="124" text-anchor="middle" font-size="15" font-weight="700" fill="var(--duoc-gris-oscuro)">origin</text>
+    <text x="490" y="146" text-anchor="middle" font-size="13" font-weight="700" fill="var(--color-text-soft)">(GitHub)</text>
+
+    <!-- push: local -> remoto -->
+    <line x1="262" y1="108" x2="378" y2="108" stroke="var(--duoc-gris-oscuro)" stroke-width="2.5" marker-end="url(#rd-arrow)"></line>
+    <text x="320" y="98" text-anchor="middle" font-size="13" font-weight="700" font-family="var(--font-mono)" fill="var(--duoc-gris-oscuro)">git push</text>
+
+    <!-- pull/fetch: remoto -> local -->
+    <line x1="378" y1="152" x2="262" y2="152" stroke="var(--duoc-gris-oscuro)" stroke-width="2.5" marker-end="url(#rd-arrow)"></line>
+    <text x="320" y="172" text-anchor="middle" font-size="13" font-weight="700" font-family="var(--font-mono)" fill="var(--duoc-gris-oscuro)">git pull / git fetch</text>
+
+    <!-- clone -->
+    <path d="M470 80 C 470 40, 170 40, 150 78" fill="none" stroke="var(--duoc-amarillo-oscuro)" stroke-width="2.5" marker-end="url(#rd-arrow)" stroke-dasharray="4 4"></path>
+    <text x="320" y="34" text-anchor="middle" font-size="13" font-weight="700" font-family="var(--font-mono)" fill="#7a5a10">git clone (copia inicial)</text>
+  </svg>
+  <figcaption>
+    <code>push</code> sube tus commits a <code>origin</code>; <code>pull</code>/<code>fetch</code>
+    los bajan; <code>clone</code> crea la copia local la primera vez.
+  </figcaption>
+</figure>
+
+<style>
+  .diagram { margin: var(--sp-5) 0; padding: var(--sp-4); background: var(--duoc-gris-fondo); border-radius: var(--radius-md); }
+  .diagram svg { display: block; width: 100%; height: auto; max-width: 640px; margin: 0 auto; }
+  .diagram figcaption { margin-top: var(--sp-3); text-align: center; font-size: var(--fs-sm); color: var(--color-text-soft); }
+  .diagram code { font-family: var(--font-mono); font-size: 0.85em; }
+</style>

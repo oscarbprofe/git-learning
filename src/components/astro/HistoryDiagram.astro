@@ -1,0 +1,48 @@
+---
+/** Diagrama U3: historia lineal de commits con HEAD apuntando a main. Colores de marca. */
+---
+<figure class="diagram">
+  <svg viewBox="0 0 620 210" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>La historia como una cadena de commits</title>
+    <desc>
+      Tres commits enlazados del más antiguo al más reciente. HEAD apunta a main, que apunta
+      al último commit.
+    </desc>
+
+    <!-- Eje de tiempo -->
+    <text x="60" y="185" font-size="12" fill="var(--color-text-soft)">más antiguo</text>
+    <text x="560" y="185" font-size="12" fill="var(--color-text-soft)" text-anchor="end">más reciente</text>
+
+    <!-- Enlaces entre commits -->
+    <line x1="103" y1="120" x2="247" y2="120" stroke="var(--duoc-gris-oscuro)" stroke-width="3"></line>
+    <line x1="293" y1="120" x2="437" y2="120" stroke="var(--duoc-gris-oscuro)" stroke-width="3"></line>
+
+    <!-- Commits -->
+    <g font-size="12" font-weight="700" font-family="var(--font-mono)">
+      <circle cx="90"  cy="120" r="16" fill="var(--duoc-azul-escuela)" stroke="var(--duoc-azul-escuela-oscuro)" stroke-width="2.5"></circle>
+      <text x="90"  y="158" text-anchor="middle" fill="var(--duoc-gris-oscuro)">f4d3c2b</text>
+      <circle cx="270" cy="120" r="16" fill="var(--duoc-azul-escuela)" stroke="var(--duoc-azul-escuela-oscuro)" stroke-width="2.5"></circle>
+      <text x="270" y="158" text-anchor="middle" fill="var(--duoc-gris-oscuro)">9e8f7d6</text>
+      <circle cx="450" cy="120" r="16" fill="var(--duoc-azul-escuela)" stroke="var(--duoc-azul-escuela-oscuro)" stroke-width="2.5"></circle>
+      <text x="450" y="158" text-anchor="middle" fill="var(--duoc-gris-oscuro)">a1b2c3d</text>
+    </g>
+
+    <!-- HEAD -> main sobre el último commit -->
+    <g font-size="13" font-weight="700">
+      <rect x="398" y="40" width="104" height="30" rx="6" fill="#fcf3da" stroke="var(--duoc-amarillo-oscuro)" stroke-width="2"></rect>
+      <text x="450" y="60" text-anchor="middle" fill="#7a5a10">HEAD → main</text>
+      <line x1="450" y1="72" x2="450" y2="102" stroke="var(--duoc-amarillo-oscuro)" stroke-width="2.5"></line>
+    </g>
+  </svg>
+  <figcaption>
+    Cada commit apunta a su anterior, formando la cadena. <code>HEAD</code> marca el commit
+    actual (vía la rama <code>main</code>).
+  </figcaption>
+</figure>
+
+<style>
+  .diagram { margin: var(--sp-5) 0; padding: var(--sp-4); background: var(--duoc-gris-fondo); border-radius: var(--radius-md); }
+  .diagram svg { display: block; width: 100%; height: auto; max-width: 620px; margin: 0 auto; }
+  .diagram figcaption { margin-top: var(--sp-3); text-align: center; font-size: var(--fs-sm); color: var(--color-text-soft); }
+  .diagram code { font-family: var(--font-mono); font-size: 0.85em; }
+</style>

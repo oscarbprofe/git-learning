@@ -8,6 +8,7 @@ points: 12
 
 import TerminalBlock from '../../components/astro/TerminalBlock.astro';
 import Callout from '../../components/astro/Callout.astro';
+import HistoryDiagram from '../../components/astro/HistoryDiagram.astro';
 
 ## `git log`: la línea de tiempo de tu proyecto
 
@@ -34,6 +35,8 @@ commit. Por eso, al hacer un nuevo commit, HEAD y la rama avanzan juntos a esa n
 Más adelante usarás HEAD para moverte por la historia. Un par de atajos que verás seguido:
 `HEAD` (commit actual), `HEAD~1` (el commit anterior), `HEAD~2` (dos atrás), y así.
 </Callout>
+
+<HistoryDiagram />
 
 ### Limitar resultados
 
