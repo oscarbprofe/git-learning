@@ -1,0 +1,43 @@
+---
+/**
+ * Logotipo oficial Duoc UC — archivo SVG provisto: /logo-duoc.svg
+ *
+ * Conforme al Manual de Identidad Corporativa Duoc UC 2024:
+ * - El archivo es la aplicación en NEGATIVO (blanco) para fondo oscuro.
+ * - No se distorsiona, recolorea, rota ni redibuja: se inserta tal cual.
+ * - El componente asume FONDO OSCURO (header y footer del sitio son oscuros,
+ *   replicando el navbar oficial duoc.cl).
+ * - Tamaños respetan el mínimo conceptual del manual.
+ */
+interface Props {
+  size?: 'sm' | 'md';
+  alt?: string;
+}
+const { size = 'md', alt = 'Duoc UC' } = Astro.props;
+---
+
+<span class:list={['duoc-logo', `size-${size}`]} aria-label={alt}>
+  <img src="/logo-duoc.svg" alt={alt} class="logo-img" />
+</span>
+
+<style>
+  .duoc-logo {
+    display: inline-flex;
+    align-items: center;
+    line-height: 0;
+    user-select: none;
+  }
+
+  /* Alto fijo en px; ancho automático según viewBox del SVG (552×123). */
+  .duoc-logo.size-sm .logo-img {
+    height: 32px;
+  }
+  .duoc-logo.size-md .logo-img {
+    height: 44px;
+  }
+
+  .logo-img {
+    display: block;
+    width: auto;
+  }
+</style>

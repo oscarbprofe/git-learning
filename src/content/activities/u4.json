@@ -1,0 +1,121 @@
+{
+  "unit": "u4",
+  "exercises": [
+    {
+      "id": "u4-e1",
+      "prompt": "Descarta los cambios no agregados al staging del archivo `login.js`.",
+      "scenario": "Editaste login.js, todavía no hiciste `git add`, y quieres botar tus cambios y volver al último commit.",
+      "accept": ["^git restore login\\.js$", "^git checkout -- login\\.js$"],
+      "hint": "Hay dos formas: la moderna (`restore`) y la clásica (`checkout --`).",
+      "expectedHint": "git restore login.js",
+      "value": 3
+    },
+    {
+      "id": "u4-e2",
+      "prompt": "Saca el archivo `config.env` del staging area sin perder los cambios.",
+      "scenario": "Hiciste `git add config.env` por error (¡es un secreto!). Quieres sacarlo del staging pero conservar tus modificaciones en disco.",
+      "accept": ["^git restore --staged config\\.env$", "^git reset HEAD config\\.env$", "^git reset config\\.env$"],
+      "hint": "Hay una forma moderna con `restore --staged` y una clásica con `reset`.",
+      "expectedHint": "git restore --staged config.env",
+      "value": 3
+    },
+    {
+      "id": "u4-e3",
+      "prompt": "Crea un commit que revierte el commit con hash `a1b2c3d`.",
+      "scenario": "Tienes un commit malo en medio de tu historia y, por encima, dos commits con trabajo válido que quieres conservar. ¿Cómo deshaces sólo el malo?",
+      "accept": ["^git revert a1b2c3d$"],
+      "hint": "Es el comando que añade un commit nuevo aplicando el cambio inverso.",
+      "expectedHint": "git revert a1b2c3d",
+      "value": 4
+    },
+    {
+      "id": "u4-e4",
+      "prompt": "Guarda tus cambios actuales en un stash.",
+      "scenario": "Tienes modificaciones a medias y necesitas dejar el working directory limpio para trabajar en otra cosa. Guarda tu trabajo temporalmente.",
+      "accept": ["^git stash$", "^git stash push$", "^git stash save$"],
+      "hint": "Tres variantes son válidas; la más corta es la más usada.",
+      "expectedHint": "git stash",
+      "value": 4
+    }
+  ],
+  "quiz": [
+    {
+      "id": "u4-q1",
+      "prompt": "¿Cuál es la diferencia entre `git reset --soft` y `git reset --hard`?",
+      "options": [
+        { "key": "a", "label": "Soft borra todo; hard preserva cambios." },
+        { "key": "b", "label": "Soft conserva los cambios en staging; hard borra los cambios sin posibilidad de recuperarlos." },
+        { "key": "c", "label": "Son sinónimos." },
+        { "key": "d", "label": "Soft funciona dentro del .git/, hard fuera de él." }
+      ],
+      "correct": "b",
+      "explanation": "`--soft` mueve HEAD pero conserva los cambios en el staging area. `--hard` también mueve HEAD pero DESCARTA todos los cambios.",
+      "value": 2
+    },
+    {
+      "id": "u4-q2",
+      "prompt": "Hiciste un commit con un bug en medio de tu historia (no es el último) y encima ya tienes otros dos commits buenos que quieres conservar. ¿Cuál es la forma correcta de deshacer SOLO el commit malo?",
+      "options": [
+        { "key": "a", "label": "git reset --hard HEAD~3" },
+        { "key": "b", "label": "git revert <hash-del-commit-malo>" },
+        { "key": "c", "label": "Borrar el archivo .git/ y empezar de nuevo." },
+        { "key": "d", "label": "git stash" }
+      ],
+      "correct": "b",
+      "explanation": "`git revert <hash>` crea un commit nuevo que aplica el cambio inverso. La historia queda intacta y los dos commits buenos siguen ahí. `reset --hard` borraría también los dos buenos.",
+      "value": 3
+    },
+    {
+      "id": "u4-q3",
+      "prompt": "¿Para qué sirve `git stash`?",
+      "options": [
+        { "key": "a", "label": "Para borrar el repositorio." },
+        { "key": "b", "label": "Para guardar temporalmente cambios sin commit y dejar el working directory limpio." },
+        { "key": "c", "label": "Para combinar dos commits en uno solo." },
+        { "key": "d", "label": "Para eliminar el último commit." }
+      ],
+      "correct": "b",
+      "explanation": "`git stash` guarda tus cambios pendientes en una pila, dejando el working directory como estaba en el último commit. Útil cuando necesitas cambiar de tarea sin commitear a medias.",
+      "value": 2
+    },
+    {
+      "id": "u4-q4",
+      "prompt": "¿Qué modo es el `default` cuando ejecutas `git reset <hash>` sin flag?",
+      "options": [
+        { "key": "a", "label": "--soft" },
+        { "key": "b", "label": "--mixed" },
+        { "key": "c", "label": "--hard" },
+        { "key": "d", "label": "--keep" }
+      ],
+      "correct": "b",
+      "explanation": "El default es `--mixed`: mueve HEAD y resetea el staging area, pero conserva los cambios en el working directory.",
+      "value": 2
+    },
+    {
+      "id": "u4-q5",
+      "prompt": "¿Qué significa `HEAD~3`?",
+      "options": [
+        { "key": "a", "label": "El commit 3 horas atrás." },
+        { "key": "b", "label": "El tercer commit del repo." },
+        { "key": "c", "label": "Tres commits antes del actual HEAD." },
+        { "key": "d", "label": "El tercer archivo del proyecto." }
+      ],
+      "correct": "c",
+      "explanation": "`HEAD~N` es el commit N posiciones antes del HEAD actual, siguiendo la línea de su padre.",
+      "value": 2
+    },
+    {
+      "id": "u4-q6",
+      "prompt": "¿Cuál de estas afirmaciones sobre `git restore` y `git reset` es CORRECTA?",
+      "options": [
+        { "key": "a", "label": "Son sinónimos: hacen exactamente lo mismo." },
+        { "key": "b", "label": "`git restore` actúa sobre archivos/working dir; `git reset` actúa sobre commits (mueve HEAD)." },
+        { "key": "c", "label": "`git restore` sólo existe en versiones antiguas." },
+        { "key": "d", "label": "`git reset` no afecta el staging area." }
+      ],
+      "correct": "b",
+      "explanation": "`git restore` reemplaza al viejo `git checkout --` y opera sobre archivos. `git reset` opera sobre la posición de HEAD y, según el modo, también sobre staging y working dir.",
+      "value": 3
+    }
+  ]
+}

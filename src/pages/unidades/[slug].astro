@@ -1,0 +1,39 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import UnitLayout from '../../layouts/UnitLayout.astro';
+import UnitActivities from '../../components/islands/UnitActivities.tsx';
+
+export async function getStaticPaths() {
+  const units = await getCollection('units');
+  return units.map((unit) => ({
+    params: { slug: unit.data.slug },
+    props: { unit },
+  }));
+}
+
+const { unit } = Astro.props;
+const { Content } = await render(unit);
+const activities = await getEntry('activities', unit.data.slug);
+if (!activities) {
+  throw new Error(`No hay actividades definidas para la unidad ${unit.data.slug}`);
+}
+---
+
+<UnitLayout unit={unit.data}>
+  <section id="conceptos" class="section">
+    <Content />
+  </section>
+
+  <UnitActivities
+    unitSlug={unit.data.slug}
+    exercises={activities.data.exercises}
+    quiz={activities.data.quiz}
+    client:load
+  />
+</UnitLayout>
+
+<style>
+  .section {
+    scroll-margin-top: 80px;
+  }
+</style>

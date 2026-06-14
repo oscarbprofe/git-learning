@@ -1,0 +1,121 @@
+{
+  "unit": "u5",
+  "exercises": [
+    {
+      "id": "u5-e1",
+      "prompt": "Crea una nueva rama llamada `feature/login` y muévete a ella en un solo comando.",
+      "scenario": "Vas a empezar el formulario de login y necesitas trabajar en una rama aparte sin tocar main.",
+      "accept": ["^git switch -c feature/login$", "^git checkout -b feature/login$"],
+      "hint": "Hay dos formas equivalentes: la moderna con `switch` y la clásica con `checkout`.",
+      "expectedHint": "git switch -c feature/login",
+      "value": 4
+    },
+    {
+      "id": "u5-e2",
+      "prompt": "Lista todas las ramas locales del repositorio.",
+      "scenario": "Quieres ver cuántas ramas tienes y en cuál estás parado.",
+      "accept": ["^git branch$"],
+      "hint": "Es un solo subcomando sin flags.",
+      "expectedHint": "git branch",
+      "value": 2
+    },
+    {
+      "id": "u5-e3",
+      "prompt": "Fusiona la rama `feature/login` en la rama actual.",
+      "scenario": "Estás parado en main y quieres traer los cambios completados en feature/login.",
+      "accept": ["^git merge feature/login$"],
+      "hint": "Un solo subcomando seguido del nombre de la rama que quieres traer.",
+      "expectedHint": "git merge feature/login",
+      "value": 4
+    },
+    {
+      "id": "u5-e4",
+      "prompt": "Elimina (de forma segura) la rama local `feature/login` ya fusionada.",
+      "scenario": "Ya hiciste merge de feature/login a main y quieres limpiar la rama.",
+      "accept": ["^git branch -d feature/login$"],
+      "hint": "Usa el flag de borrado seguro (minúscula), que sólo borra si la rama fue mergeada.",
+      "expectedHint": "git branch -d feature/login",
+      "value": 4
+    }
+  ],
+  "quiz": [
+    {
+      "id": "u5-q1",
+      "prompt": "¿Qué es técnicamente una rama en Git?",
+      "options": [
+        { "key": "a", "label": "Una copia completa del repositorio." },
+        { "key": "b", "label": "Un puntero móvil a un commit." },
+        { "key": "c", "label": "Un archivo de configuración." },
+        { "key": "d", "label": "Un servidor remoto." }
+      ],
+      "correct": "b",
+      "explanation": "Una rama es sólo un puntero a un commit. Por eso crear ramas es instantáneo: no copia archivos.",
+      "value": 2
+    },
+    {
+      "id": "u5-q2",
+      "prompt": "¿Cuándo ocurre un merge `fast-forward`?",
+      "options": [
+        { "key": "a", "label": "Cuando ambas ramas tuvieron commits nuevos en paralelo." },
+        { "key": "b", "label": "Cuando la rama destino no tuvo commits nuevos desde que se creó la rama feature." },
+        { "key": "c", "label": "Cuando hay conflictos." },
+        { "key": "d", "label": "Cuando se usa el flag --no-ff." }
+      ],
+      "correct": "b",
+      "explanation": "El fast-forward es posible cuando main no avanzó: Git sólo mueve el puntero de main hacia el último commit de feature.",
+      "value": 2
+    },
+    {
+      "id": "u5-q3",
+      "prompt": "Te aparece un conflicto en un merge. ¿Qué pasos sigues?",
+      "options": [
+        { "key": "a", "label": "git merge --abort, eliminar la rama y crear una nueva." },
+        { "key": "b", "label": "Editar el archivo conservando el código deseado y eliminando los marcadores <<<<<<<, =======, >>>>>>>, luego git add y git commit." },
+        { "key": "c", "label": "git reset --hard." },
+        { "key": "d", "label": "Esperar a que Git lo resuelva automáticamente." }
+      ],
+      "correct": "b",
+      "explanation": "El conflicto requiere decisión humana: editas el archivo, eliminas los marcadores, agregas con `git add` y haces commit para cerrar el merge.",
+      "value": 3
+    },
+    {
+      "id": "u5-q4",
+      "prompt": "¿Cuál es la diferencia entre `git branch -d` y `git branch -D`?",
+      "options": [
+        { "key": "a", "label": "-d es para remotas, -D es para locales." },
+        { "key": "b", "label": "-d sólo borra si la rama fue fusionada; -D fuerza el borrado aun sin fusionar." },
+        { "key": "c", "label": "Son sinónimos." },
+        { "key": "d", "label": "-D borra todas las ramas." }
+      ],
+      "correct": "b",
+      "explanation": "La minúscula es \"borrado seguro\" (sólo si está mergeada). La mayúscula es \"forzado\" (incluso si pierdes trabajo).",
+      "value": 2
+    },
+    {
+      "id": "u5-q5",
+      "prompt": "¿Qué hace un commit de merge?",
+      "options": [
+        { "key": "a", "label": "Es un commit normal con un único padre." },
+        { "key": "b", "label": "Es un commit especial con DOS padres: el último de cada rama fusionada." },
+        { "key": "c", "label": "Es un alias de git stash." },
+        { "key": "d", "label": "Es un commit que sólo existe en remoto." }
+      ],
+      "correct": "b",
+      "explanation": "El commit de merge tiene dos padres, lo que permite a Git representar el grafo de ramas que se unen.",
+      "value": 2
+    },
+    {
+      "id": "u5-q6",
+      "prompt": "¿Cuál NO es una buena razón para crear una rama?",
+      "options": [
+        { "key": "a", "label": "Trabajar en una nueva feature sin afectar main." },
+        { "key": "b", "label": "Hacer un hotfix urgente sin mezclar con trabajo en curso." },
+        { "key": "c", "label": "Experimentar un refactor arriesgado." },
+        { "key": "d", "label": "Cambiar el nombre de un archivo." }
+      ],
+      "correct": "d",
+      "explanation": "Renombrar un archivo es un cambio trivial que va directo a la rama actual. Ramas son para AISLAR trabajo independiente.",
+      "value": 3
+    }
+  ]
+}

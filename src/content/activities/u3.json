@@ -1,0 +1,108 @@
+{
+  "unit": "u3",
+  "exercises": [
+    {
+      "id": "u3-e1",
+      "prompt": "Muestra la historia de commits en formato compacto (una línea por commit).",
+      "scenario": "Quieres revisar de un vistazo los últimos commits con su hash corto y mensaje.",
+      "accept": ["^git log --oneline$"],
+      "hint": "Hay un flag dedicado para esto, justo después de `git log`.",
+      "expectedHint": "git log --oneline",
+      "value": 2
+    },
+    {
+      "id": "u3-e2",
+      "prompt": "Muestra las diferencias entre tu staging area y el último commit.",
+      "scenario": "Acabas de hacer `git add` y quieres revisar qué entrará en el próximo commit, línea por línea.",
+      "accept": ["^git diff --staged$", "^git diff --cached$"],
+      "hint": "Hay dos flags equivalentes para esto. Ambos son válidos.",
+      "expectedHint": "git diff --staged",
+      "value": 3
+    },
+    {
+      "id": "u3-e3",
+      "prompt": "Modifica el mensaje del último commit a 'Corrige bug en login'.",
+      "scenario": "Tu último commit quedó con un typo en el mensaje y aún no lo compartiste. Reescríbelo sin agregar archivos nuevos.",
+      "accept": ["^git commit --amend -m \"Corrige bug en login\"$"],
+      "hint": "Recuerda el flag que 'rehace' el último commit.",
+      "expectedHint": "git commit --amend -m \"Corrige bug en login\"",
+      "value": 4
+    },
+    {
+      "id": "u3-e4",
+      "prompt": "Inspecciona en detalle el commit con hash corto `f4d3c2b`.",
+      "scenario": "Quieres ver mensaje + diff completo de ese commit específico.",
+      "accept": ["^git show f4d3c2b$"],
+      "hint": "Es un solo subcomando seguido del hash del commit.",
+      "expectedHint": "git show f4d3c2b",
+      "value": 2
+    }
+  ],
+  "quiz": [
+    {
+      "id": "u3-q1",
+      "prompt": "¿Qué muestra `git diff` SIN flags adicionales?",
+      "options": [
+        { "key": "a", "label": "Diferencias entre staging area y último commit." },
+        { "key": "b", "label": "Diferencias entre working directory y staging area." },
+        { "key": "c", "label": "Diferencias entre el último commit y el anterior." },
+        { "key": "d", "label": "Historia completa del repositorio." }
+      ],
+      "correct": "b",
+      "explanation": "Sin flags, `git diff` muestra lo que cambió en tu working directory pero aún no has hecho `git add`.",
+      "value": 2
+    },
+    {
+      "id": "u3-q2",
+      "prompt": "Agregaste un archivo al `.gitignore`, pero ya estaba versionado. ¿Qué pasa?",
+      "options": [
+        { "key": "a", "label": "Git lo borra automáticamente del repositorio." },
+        { "key": "b", "label": "Git lo sigue rastreando; necesitas `git rm --cached` para des-versionarlo." },
+        { "key": "c", "label": "El archivo desaparece de tu disco." },
+        { "key": "d", "label": "Git muestra un error." }
+      ],
+      "correct": "b",
+      "explanation": "`.gitignore` sólo afecta a archivos no rastreados. Para sacar un archivo ya versionado del repo (manteniéndolo en disco), usa `git rm --cached`.",
+      "value": 3
+    },
+    {
+      "id": "u3-q3",
+      "prompt": "¿Cuándo es PELIGROSO usar `git commit --amend`?",
+      "options": [
+        { "key": "a", "label": "Siempre es seguro." },
+        { "key": "b", "label": "Cuando el commit ya viajó a un servidor remoto donde tu equipo lo tiene (lo verás en la Unidad 6)." },
+        { "key": "c", "label": "Cuando el commit todavía está sólo en tu computador." },
+        { "key": "d", "label": "Cuando el mensaje del commit es muy largo." }
+      ],
+      "correct": "b",
+      "explanation": "`--amend` reescribe el último commit (genera un hash nuevo). Mientras la historia esté sólo en tu computador, es seguro. Una vez que la compartes con un servidor remoto y otras personas la tienen, reescribirla causa conflictos.",
+      "value": 2
+    },
+    {
+      "id": "u3-q4",
+      "prompt": "¿Para qué sirve `git show <hash>`?",
+      "options": [
+        { "key": "a", "label": "Para mostrar el contenido completo del repo." },
+        { "key": "b", "label": "Para volver el repositorio a ese commit." },
+        { "key": "c", "label": "Para ver el mensaje y diff de ese commit específico." },
+        { "key": "d", "label": "Para borrar ese commit." }
+      ],
+      "correct": "c",
+      "explanation": "`git show <hash>` te enseña mensaje + cambios introducidos por ese commit. No modifica nada.",
+      "value": 2
+    },
+    {
+      "id": "u3-q5",
+      "prompt": "¿Cuál NO debería incluirse en un repositorio Git (y por lo tanto va en `.gitignore`)?",
+      "options": [
+        { "key": "a", "label": "El código fuente." },
+        { "key": "b", "label": "El archivo .env con la API key." },
+        { "key": "c", "label": "El archivo README.md." },
+        { "key": "d", "label": "El package.json." }
+      ],
+      "correct": "b",
+      "explanation": "Los secretos (.env, credenciales, tokens) NUNCA deben versionarse. Si por error subes uno, considéralo comprometido y rótalo.",
+      "value": 3
+    }
+  ]
+}

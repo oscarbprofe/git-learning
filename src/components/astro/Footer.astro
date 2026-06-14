@@ -1,0 +1,61 @@
+---
+import DuocLogo from './DuocLogo.astro';
+---
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="brand">
+      <DuocLogo variant="light" size="sm" />
+    </div>
+    <div class="links">
+      <a href="https://www.duoc.cl" target="_blank" rel="noopener noreferrer">duoc.cl</a>
+      <span aria-hidden="true">·</span>
+      <span class="acreditacion">
+        Institución acreditada — Comisión Nacional de Acreditación
+      </span>
+    </div>
+    <p class="legal">
+      © {new Date().getFullYear()} Duoc UC — Escuela de Informática y Telecomunicaciones.
+      Material educativo para uso académico interno.
+    </p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--duoc-negro-80);
+    color: var(--duoc-blanco);
+    padding: var(--sp-6) 0;
+    margin-top: var(--sp-10);
+  }
+
+  .footer-inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    text-align: left;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    align-items: center;
+    font-size: var(--fs-sm);
+  }
+
+  .links a {
+    color: var(--duoc-amarillo);
+    font-weight: 700;
+  }
+
+  .acreditacion {
+    color: var(--duoc-gris-claro);
+  }
+
+  .legal {
+    margin: 0;
+    font-size: var(--fs-xs);
+    color: var(--duoc-gris-claro);
+  }
+</style>

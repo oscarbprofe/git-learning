@@ -1,0 +1,147 @@
+---
+order: 3
+slug: u3
+title: Explorando la historia
+description: log con filtros, diff, show, .gitignore, amend.
+points: 12
+---
+
+import TerminalBlock from '../../components/astro/TerminalBlock.astro';
+import Callout from '../../components/astro/Callout.astro';
+
+## `git log`: la línea de tiempo de tu proyecto
+
+Ya viste `git log` en la unidad anterior. Ahora aprenderás a sacarle provecho.
+
+### Formato compacto
+
+<TerminalBlock>
+<span class="prompt">$</span> git log --oneline
+<span class="out">a1b2c3d (HEAD -&gt; main) Agrega login</span>
+<span class="out">9e8f7d6 Corrige typo en README</span>
+<span class="out">f4d3c2b Agrega README inicial</span>
+</TerminalBlock>
+
+`--oneline` muestra cada commit en una sola línea (hash corto + mensaje). Ideal para ver
+de un vistazo la historia.
+
+### Limitar resultados
+
+<TerminalBlock>
+<span class="prompt">$</span> git log -n 5             <span class="comment"># últimos 5 commits</span>
+<span class="prompt">$</span> git log --author="María" <span class="comment"># sólo de un autor</span>
+<span class="prompt">$</span> git log --since="2 weeks" <span class="comment"># últimas 2 semanas</span>
+</TerminalBlock>
+
+### Combinando flags
+
+`git log --oneline --graph --all` es uno de los favoritos: muestra la estructura completa
+de la historia en ASCII. Le verás aún más utilidad cuando lleguemos a **ramas** en la
+Unidad 5.
+
+## `git diff`: ver qué cambió exactamente
+
+Comparado con commits, `log` te dice **qué hubo**, `diff` te dice **qué cambió línea por
+línea**.
+
+<TerminalBlock>
+<span class="prompt">$</span> git diff                <span class="comment"># working dir vs último commit</span>
+<span class="prompt">$</span> git diff --staged       <span class="comment"># staging vs último commit</span>
+<span class="prompt">$</span> git diff a1b2c3d 9e8f7d6 <span class="comment"># entre dos commits</span>
+</TerminalBlock>
+
+En la salida:
+- Líneas con `-` (rojo) son las **eliminadas**.
+- Líneas con `+` (verde) son las **agregadas**.
+
+<Callout type="tip">
+Antes de hacer `git add`, ejecuta `git diff`. Antes de hacer `git commit`, ejecuta
+`git diff --staged`. Te ahorra commits con basura accidental.
+</Callout>
+
+## `git show`: zoom a un commit específico
+
+<TerminalBlock>
+<span class="prompt">$</span> git show a1b2c3d
+<span class="comment"># muestra mensaje + diff completo de ese commit</span>
+</TerminalBlock>
+
+## `.gitignore`: archivos que NO quieres versionar
+
+Hay archivos que **nunca** deben entrar al repositorio: secretos, dependencias instaladas,
+salidas del compilador. Para esto se usa el archivo `.gitignore` en la raíz del repo:
+
+```gitignore
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Dependencias
+node_modules/
+
+# Secretos
+.env
+.env.local
+
+# Salida de compilación
+dist/
+build/
+*.log
+```
+
+Cada línea es un patrón. Git ignora cualquier archivo o carpeta que coincida.
+
+<Callout type="warn" title="Cuidado">
+`.gitignore` sólo afecta a archivos **no rastreados**. Si ya hiciste commit de un archivo,
+agregarlo al `.gitignore` no lo "des-versiona". Para eso necesitas un comando hermano:
+`git rm --cached <archivo>`, que le dice a Git "deja de seguir este archivo" pero **lo
+conserva en tu disco**.
+</Callout>
+
+## `git commit --amend`: rehacer el último commit
+
+¿Te diste cuenta de que el mensaje del último commit tiene un typo, o que olvidaste
+agregar un archivo? `--amend` te deja "rehacerlo":
+
+<TerminalBlock>
+<span class="prompt">$</span> git add archivo_olvidado.txt
+<span class="prompt">$</span> git commit --amend -m "Mensaje corregido"
+</TerminalBlock>
+
+Esto **reemplaza** el último commit (genera un nuevo hash). Sólo es seguro hacerlo
+mientras la historia todavía esté **sólo en tu computador**.
+
+<Callout type="warn">
+En la Unidad 6 aprenderás a enviar tu historia a un servidor remoto donde tu equipo la
+verá. Una vez que esos commits ya viajaron al servidor, **nunca los modifiques con
+`--amend`**: causa conflictos para el resto del equipo. Por ahora, todo lo que hacemos
+vive en tu máquina, así que es seguro experimentar con amend.
+</Callout>
+
+## Ejemplo: investigar un cambio
+
+Tu compañero hizo algo en `login.js` que rompió la app. Quieres investigar:
+
+<TerminalBlock>
+<span class="prompt">$</span> git log --oneline login.js
+<span class="out">9e8f7d6 Refactor login</span>
+<span class="out">f4d3c2b Agrega login</span>
+<span class="prompt">$</span> git show 9e8f7d6
+<span class="comment"># lees el diff y entiendes el cambio</span>
+</TerminalBlock>
+
+## Caso de uso real
+
+Estás trabajando en el proyecto del semestre y te das cuenta de que accidentalmente
+hiciste commit del archivo `.env` con tu API key de OpenAI:
+
+1. Agregas `.env` al `.gitignore`.
+2. Ejecutas `git rm --cached .env` para que Git deje de seguirlo (sin borrarlo del disco).
+3. Haces commit del `.gitignore` actualizado y de la salida del paso anterior.
+4. **Importante:** la key ya quedó registrada en uno de tus commits. Esa parte de la
+   historia es tuya solamente *hasta* que la compartas con un servidor remoto (algo que
+   verás en la Unidad 6). Si planeas compartirla, considera la key comprometida y
+   regenérala antes.
+
+Saber **revisar y entender** la historia antes de actuar es la habilidad central de esta
+unidad.

@@ -1,0 +1,140 @@
+---
+order: 5
+slug: u5
+title: Ramas (branches)
+description: branch, switch/checkout, merge fast-forward vs three-way, resolución de conflictos.
+points: 14
+---
+
+import TerminalBlock from '../../components/astro/TerminalBlock.astro';
+import Callout from '../../components/astro/Callout.astro';
+
+## ¿Qué es una rama?
+
+Una **rama** (branch) es una línea de desarrollo independiente. Te permite trabajar en
+una nueva feature, un experimento o un bugfix **sin afectar la versión estable** de tu
+proyecto.
+
+Cuando ejecutas `git init`, Git crea una rama por defecto llamada `main` (antes `master`).
+Todos tus commits van a esa rama hasta que decidas crear otra.
+
+<Callout type="info" title="Una rama es sólo un puntero">
+Técnicamente, una rama es un **puntero** a un commit. Cuando haces commit en una rama,
+el puntero se mueve automáticamente al nuevo commit. Por eso crear ramas en Git es
+súper barato (no copia archivos).
+</Callout>
+
+## Crear, listar y cambiar de rama
+
+<TerminalBlock>
+<span class="prompt">$</span> git branch                     <span class="comment"># lista ramas locales</span>
+<span class="prompt">$</span> git branch feature/login        <span class="comment"># crea una rama (sin cambiarte)</span>
+<span class="prompt">$</span> git switch feature/login        <span class="comment"># te cambias a ella</span>
+<span class="prompt">$</span> git switch -c feature/registro  <span class="comment"># crea Y se cambia (atajo)</span>
+</TerminalBlock>
+
+El comando "clásico" equivalente a `git switch` era `git checkout`. Funciona igual:
+
+<TerminalBlock>
+<span class="prompt">$</span> git checkout feature/login        <span class="comment"># ≡ git switch feature/login</span>
+<span class="prompt">$</span> git checkout -b feature/registro  <span class="comment"># ≡ git switch -c feature/registro</span>
+</TerminalBlock>
+
+<Callout type="tip">
+A partir de Git 2.23 (año 2019) se recomienda `git switch` y `git restore` porque son más
+específicos. El `git checkout` original hacía demasiadas cosas distintas (ramas Y archivos).
+Sin embargo, ambos funcionan y los verás mezclados en tutoriales.
+</Callout>
+
+## Fusionar ramas: `git merge`
+
+Cuando terminas la feature, fusionas la rama de feature de vuelta a `main`:
+
+<TerminalBlock>
+<span class="prompt">$</span> git switch main             <span class="comment"># te paras en la rama destino</span>
+<span class="prompt">$</span> git merge feature/login     <span class="comment"># traes los cambios desde feature/login</span>
+</TerminalBlock>
+
+Git tiene dos formas de hacer el merge dependiendo de la historia:
+
+### Fast-forward
+
+Ocurre cuando la rama destino (`main`) NO tuvo commits nuevos desde que creaste la rama
+feature. Git simplemente mueve el puntero `main` hacia adelante. **No se crea un commit
+de merge**.
+
+### Three-way merge
+
+Ocurre cuando ambas ramas avanzaron en paralelo. Git crea un **commit de merge** especial
+que tiene **dos padres**: el último commit de cada rama. Aquí pueden aparecer conflictos.
+
+## Resolver conflictos
+
+Un conflicto ocurre cuando dos ramas modifican la **misma línea** del mismo archivo. Git
+no puede decidir cuál versión es correcta, así que te pide ayuda:
+
+<TerminalBlock>
+<span class="prompt">$</span> git merge feature/login
+<span class="out">Auto-merging app.js</span>
+<span class="out">CONFLICT (content): Merge conflict in app.js</span>
+<span class="out">Automatic merge failed; fix conflicts and then commit the result.</span>
+</TerminalBlock>
+
+Si abres `app.js` verás algo así:
+
+```js
+function login() {
+<<<<<<< HEAD
+  console.log("versión de main");
+=======
+  console.log("versión de feature/login");
+>>>>>>> feature/login
+}
+```
+
+Para resolver:
+
+1. **Edita el archivo** dejando sólo el código que quieres conservar (puede ser una de
+   las dos versiones, una mezcla, o algo nuevo).
+2. **Borra los marcadores** `<<<<<<<`, `=======` y `>>>>>>>`.
+3. `git add app.js` para marcarlo como resuelto.
+4. `git commit` para cerrar el merge (Git ya tiene un mensaje sugerido).
+
+<Callout type="warn" title="Toma de decisión">
+El conflicto NO es un error de Git: Git está haciendo lo correcto, te avisa que necesita
+tu criterio humano. Resolverlo es parte normal del trabajo en equipo.
+</Callout>
+
+## Eliminar ramas
+
+Cuando una rama ya cumplió su propósito y fue fusionada:
+
+<TerminalBlock>
+<span class="prompt">$</span> git branch -d feature/login   <span class="comment"># borrado seguro (si fue mergeada)</span>
+<span class="prompt">$</span> git branch -D feature/login   <span class="comment"># forzado (incluso si NO fue mergeada)</span>
+</TerminalBlock>
+
+## Ejemplo: feature aislada
+
+<TerminalBlock>
+<span class="prompt">$</span> git switch -c feature/dark-mode
+<span class="comment"># ... editas archivos, haces commits ...</span>
+<span class="prompt">$</span> git switch main
+<span class="prompt">$</span> git merge feature/dark-mode
+<span class="prompt">$</span> git branch -d feature/dark-mode
+</TerminalBlock>
+
+Tu rama `main` siempre se mantuvo limpia y estable.
+
+## Caso de uso real
+
+Estás trabajando en el proyecto grupal del semestre. Mientras tú agregas el formulario
+de login, tu compañera Camila está rediseñando la página de inicio en `home.html`.
+Ambas necesitan trabajar **al mismo tiempo** sin pisarse:
+
+1. Cada una crea su rama: `git switch -c feature/login` y `git switch -c feature/home`.
+2. Trabajan en paralelo, hacen commits en sus ramas respectivas.
+3. Cuando terminan, cada una hace merge a `main` por separado.
+
+Si por casualidad ambas tocaron el mismo archivo, Git las avisa con un conflicto y tú
+decides cómo combinar los cambios. Sin ramas, este flujo sería imposible.

@@ -1,0 +1,79 @@
+/* Design tokens — Manual de Identidad Corporativa Duoc UC 2024
+ * Paleta web oficial (pág. 24) + acento de Escuela de Informática y Telecomunicaciones.
+ */
+
+:root {
+  /* Cromática corporativa */
+  --duoc-amarillo: #f1b634;
+  --duoc-amarillo-claro: #fcd97a;
+  --duoc-amarillo-oscuro: #c8941e;
+
+  --duoc-negro: #000000;
+  --duoc-negro-80: #1a1a1a;
+  --duoc-gris-oscuro: #333333;
+  --duoc-gris: #666666;
+  --duoc-gris-claro: #b3b3b3;
+  --duoc-gris-fondo: #f4f4f4;
+
+  --duoc-blanco: #ffffff;
+
+  /* Escuela de Informática y Telecomunicaciones */
+  --duoc-azul-escuela: #4e7cdd;
+  --duoc-azul-escuela-claro: #7ea3ec;
+  --duoc-azul-escuela-oscuro: #2f5cc0;
+
+  /* Semánticos */
+  --color-bg: var(--duoc-blanco);
+  --color-bg-soft: var(--duoc-gris-fondo);
+  --color-text: var(--duoc-negro-80);
+  --color-text-soft: var(--duoc-gris);
+  --color-border: #e0e0e0;
+  --color-accent: var(--duoc-amarillo);
+  --color-link: var(--duoc-azul-escuela-oscuro);
+  --color-success: #2e7d32;
+  --color-error: #c62828;
+  --color-warning: #ed6c02;
+
+  /* Tipografía */
+  --font-serif: 'Merriweather', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Lato', 'Segoe UI', Arial, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Mono', Consolas, 'Liberation Mono', monospace;
+
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-base: 1rem;
+  --fs-md: 1.125rem;
+  --fs-lg: 1.375rem;
+  --fs-xl: 1.75rem;
+  --fs-2xl: 2.25rem;
+  --fs-3xl: 3rem;
+
+  --lh-tight: 1.25;
+  --lh-normal: 1.55;
+  --lh-relaxed: 1.75;
+
+  /* Espacio */
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  --sp-5: 1.5rem;
+  --sp-6: 2rem;
+  --sp-8: 3rem;
+  --sp-10: 4rem;
+
+  /* Layout */
+  --container-max: 72rem;
+  --content-max: 48rem;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.12);
+
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.25s ease;
+}

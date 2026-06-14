@@ -1,0 +1,108 @@
+{
+  "unit": "u2",
+  "exercises": [
+    {
+      "id": "u2-e1",
+      "prompt": "Convierte la carpeta actual en un repositorio Git.",
+      "scenario": "Estás dentro de una carpeta vacía y quieres iniciar el seguimiento de versiones. ¿Qué comando ejecutas?",
+      "accept": ["^git init$"],
+      "hint": "Es un solo verbo más Git.",
+      "expectedHint": "git init",
+      "value": 2
+    },
+    {
+      "id": "u2-e2",
+      "prompt": "Agrega TODOS los archivos modificados al staging area.",
+      "scenario": "Hiciste varios cambios y quieres dejarlos listos para tu próximo commit. Usa la versión más corta y habitual.",
+      "accept": ["^git add \\.$", "^git add -A$", "^git add --all$"],
+      "hint": "Hay tres formas equivalentes. La más usada es la del punto.",
+      "expectedHint": "git add .",
+      "value": 2
+    },
+    {
+      "id": "u2-e3",
+      "prompt": "Crea un commit con el mensaje 'Agrega login'.",
+      "scenario": "Acabas de agregar al staging tus cambios del login. Crea el commit en una sola línea (sin abrir editor).",
+      "accept": ["^git commit -m \"Agrega login\"$"],
+      "hint": "El flag `-m` permite escribir el mensaje sin abrir un editor.",
+      "expectedHint": "git commit -m \"Agrega login\"",
+      "value": 4
+    },
+    {
+      "id": "u2-e4",
+      "prompt": "Consulta el estado actual del repositorio.",
+      "scenario": "Quieres ver qué archivos están modificados, cuáles están en staging y cuáles untracked.",
+      "accept": ["^git status$"],
+      "hint": "Un solo subcomando, ningún flag.",
+      "expectedHint": "git status",
+      "value": 1
+    }
+  ],
+  "quiz": [
+    {
+      "id": "u2-q1",
+      "prompt": "¿Cuáles son las tres áreas de Git, en orden?",
+      "options": [
+        { "key": "a", "label": "Working directory → Staging area → Repositorio" },
+        { "key": "b", "label": "Repositorio → Staging area → Working directory" },
+        { "key": "c", "label": "Untracked → Tracked → Committed" },
+        { "key": "d", "label": "Editar → Imprimir → Archivar" }
+      ],
+      "correct": "a",
+      "explanation": "El flujo es: editas en el working directory, preparas con add al staging area, y commit lo deja en el repositorio.",
+      "value": 2
+    },
+    {
+      "id": "u2-q2",
+      "prompt": "¿Qué crea el comando `git init`?",
+      "options": [
+        { "key": "a", "label": "Una conexión con un servidor en internet." },
+        { "key": "b", "label": "Un primer commit vacío." },
+        { "key": "c", "label": "Una carpeta oculta .git/ que contiene la historia y configuración." },
+        { "key": "d", "label": "Un archivo README.md inicial." }
+      ],
+      "correct": "c",
+      "explanation": "`git init` crea la carpeta oculta `.git/` con toda la maquinaria del repositorio: su configuración y la historia completa de los cambios que registres.",
+      "value": 2
+    },
+    {
+      "id": "u2-q3",
+      "prompt": "¿Qué significa que un archivo aparezca como 'Untracked' en `git status`?",
+      "options": [
+        { "key": "a", "label": "Git ve el archivo pero todavía no le hace seguimiento." },
+        { "key": "b", "label": "El archivo está dañado." },
+        { "key": "c", "label": "El archivo está en el último commit." },
+        { "key": "d", "label": "El archivo está en el staging area." }
+      ],
+      "correct": "a",
+      "explanation": "Untracked = Git lo detecta pero todavía no participa de los commits. Necesitas `git add` para empezar a versionarlo.",
+      "value": 2
+    },
+    {
+      "id": "u2-q4",
+      "prompt": "Para hacer un commit sin que Git abra un editor de texto, ¿qué flag usas?",
+      "options": [
+        { "key": "a", "label": "-a" },
+        { "key": "b", "label": "-m" },
+        { "key": "c", "label": "-e" },
+        { "key": "d", "label": "-q" }
+      ],
+      "correct": "b",
+      "explanation": "`-m \"mensaje\"` permite indicar el mensaje del commit directamente en la línea de comandos.",
+      "value": 2
+    },
+    {
+      "id": "u2-q5",
+      "prompt": "¿Cuál es la mejor práctica para escribir mensajes de commit?",
+      "options": [
+        { "key": "a", "label": "En pasado, lo más largo posible y con emojis." },
+        { "key": "b", "label": "En presente/imperativo, breve y descriptivo." },
+        { "key": "c", "label": "Sólo el ID del ticket." },
+        { "key": "d", "label": "El nombre del archivo modificado, sin contexto." }
+      ],
+      "correct": "b",
+      "explanation": "El estándar de la industria es usar verbo en presente/imperativo (\"Agrega login\", \"Corrige typo\") y mantener la primera línea bajo 72 caracteres.",
+      "value": 1
+    }
+  ]
+}

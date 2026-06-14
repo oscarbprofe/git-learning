@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SummaryView from '../components/islands/SummaryView.tsx';
+import { getCollection } from 'astro:content';
+import type { ActivityCatalog } from '../lib/pdf';
+
+const activities = await getCollection('activities');
+const catalog: ActivityCatalog = { exercises: {}, quiz: {} };
+for (const entry of activities) {
+  const data = entry.data;
+  for (const ex of data.exercises) {
+    catalog.exercises[ex.id] = {
+      id: ex.id,
+      unit: data.unit,
+      prompt: ex.prompt,
+      value: ex.value,
+    };
+  }
+  for (const q of data.quiz) {
+    catalog.quiz[q.id] = {
+      id: q.id,
+      unit: data.unit,
+      prompt: q.prompt,
+      value: q.value,
+      options: q.options,
+      correct: q.correct,
+    };
+  }
+}
+---
+
+<BaseLayout title="Resumen y nota — Git Challenge">
+  <div class="container resumen-container">
+    <SummaryView catalog={catalog} client:load />
+  </div>
+</BaseLayout>
+
+<style>
+  .resumen-container {
+    padding: var(--sp-6) var(--sp-5);
+    max-width: 64rem;
+  }
+</style>

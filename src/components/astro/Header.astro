@@ -1,0 +1,91 @@
+---
+import DuocLogo from './DuocLogo.astro';
+import HeaderProgress from '../islands/HeaderProgress.tsx';
+import UserMenu from '../islands/UserMenu.tsx';
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="/" class="brand" aria-label="Inicio — Git Challenge Duoc UC">
+      <DuocLogo size="sm" />
+      <span class="brand-sep" aria-hidden="true">/</span>
+      <span class="brand-title">Git Challenge</span>
+    </a>
+
+    <HeaderProgress client:load />
+
+    <UserMenu client:load />
+  </div>
+  <!-- Detalle amarillo a la derecha, eco del navbar oficial duoc.cl -->
+  <div class="header-accent" aria-hidden="true"></div>
+</header>
+
+<style>
+  .site-header {
+    background: var(--duoc-negro);
+    color: var(--duoc-blanco);
+    border-bottom: 1px solid #000;
+    padding: var(--sp-4) 0;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-5);
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 2;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-3);
+    text-decoration: none;
+    color: var(--duoc-blanco);
+  }
+
+  .brand-sep {
+    color: var(--duoc-gris-claro);
+    font-weight: 300;
+    font-size: 1.6rem;
+    opacity: 0.6;
+  }
+
+  .brand-title {
+    font-family: var(--font-serif);
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--duoc-blanco);
+    letter-spacing: -0.01em;
+  }
+
+  /* Banda amarilla al borde derecho del header — replica el detalle
+   * "ADMISIÓN" del navbar oficial duoc.cl como acento de marca. */
+  .header-accent {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 14px;
+    background: var(--duoc-amarillo);
+    pointer-events: none;
+  }
+
+  @media (max-width: 640px) {
+    .header-inner {
+      gap: var(--sp-3);
+    }
+    .brand-sep,
+    .brand-title {
+      display: none;
+    }
+    .header-accent {
+      width: 8px;
+    }
+  }
+</style>

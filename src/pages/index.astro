@@ -1,17 +1,90 @@
 ---
-
+import BaseLayout from '../layouts/BaseLayout.astro';
+import JourneyMap from '../components/islands/JourneyMap.tsx';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout>
+  <section class="hero">
+    <div class="container hero-inner">
+      <div class="hero-text">
+        <span class="kicker">Escuela de Informática y Telecomunicaciones · Duoc UC</span>
+        <h1>Git Challenge</h1>
+        <p class="lead">
+          Un viaje de aprendizaje en 8 unidades para dominar Git desde cero. Aprendes con
+          teoría, ejemplos, ejercicios y quiz. Tu avance queda guardado y al final exportas
+          un informe en PDF para entregar a tu profesor.
+        </p>
+        <div class="bullets">
+          <div><span class="dot" aria-hidden="true">✓</span> 8 unidades progresivas</div>
+          <div><span class="dot" aria-hidden="true">✓</span> 31 ejercicios + 42 preguntas</div>
+          <div><span class="dot" aria-hidden="true">✓</span> Nota 1.0–7.0 con exigencia 60%</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container map-section">
+    <JourneyMap client:load />
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    background: linear-gradient(135deg, var(--duoc-negro-80) 0%, var(--duoc-gris-oscuro) 100%);
+    color: var(--duoc-blanco);
+    padding: var(--sp-10) 0 var(--sp-8);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 90% 10%, rgba(241, 182, 52, 0.15) 0%, transparent 50%);
+    pointer-events: none;
+  }
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 60rem;
+  }
+  .kicker {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: var(--fs-xs);
+    color: var(--duoc-amarillo);
+    font-weight: 700;
+  }
+  .hero h1 {
+    color: var(--duoc-blanco);
+    font-size: clamp(2.5rem, 6vw, 4rem);
+    margin: var(--sp-2) 0 var(--sp-3);
+    line-height: 1.05;
+  }
+  .hero h1::after {
+    content: '.';
+    color: var(--duoc-amarillo);
+  }
+  .lead {
+    max-width: 36rem;
+    color: var(--duoc-gris-claro);
+    font-size: var(--fs-md);
+  }
+  .bullets {
+    display: flex;
+    gap: var(--sp-5);
+    flex-wrap: wrap;
+    margin-top: var(--sp-4);
+    font-size: var(--fs-sm);
+  }
+  .bullets .dot {
+    color: var(--duoc-amarillo);
+    font-weight: 900;
+    margin-right: 6px;
+  }
+  .map-section {
+    padding-top: var(--sp-8);
+    padding-bottom: var(--sp-6);
+    max-width: 60rem;
+  }
+</style>

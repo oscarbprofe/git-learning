@@ -1,0 +1,115 @@
+---
+order: 1
+slug: u1
+title: ¿Qué es el control de versiones?
+description: El problema que resuelve Git, instalación, configuración inicial y dónde encontrar ayuda.
+points: 10
+---
+
+import TerminalBlock from '../../components/astro/TerminalBlock.astro';
+import Callout from '../../components/astro/Callout.astro';
+
+## El problema que vino a resolver Git
+
+Imagina que estás escribiendo el informe de tu primera asignatura. Lo guardas como
+`informe.docx`. Tu compañero te corrige y lo guardas como `informe_v2.docx`. Cambias unas
+secciones y aparece `informe_final.docx`, luego `informe_final_v2.docx`, después
+`informe_final_REAL_este_si.docx`. ¿Te suena familiar?
+
+Eso, multiplicado por 10 personas trabajando sobre 200 archivos de código, es el caos
+que **Git** vino a ordenar. Git es un **sistema de control de versiones**: una
+herramienta que guarda la historia completa de un proyecto y te permite:
+
+- **Saber** qué cambió, cuándo y quién hizo cada cambio.
+- **Recuperar** el proyecto tal como estaba en cualquier punto del pasado.
+- **Trabajar en paralelo** con otras personas sin que se pisen los cambios.
+- **Probar ideas nuevas** sin afectar la versión que ya funciona.
+
+Cómo logra todo esto lo iremos viendo unidad por unidad, sin saltar pasos.
+
+## Centralizado vs distribuido
+
+Existen dos grandes familias de sistemas de control de versiones:
+
+- **Centralizados** (SVN, CVS): hay un único servidor con la historia. Si te quedas sin
+  conexión, no puedes registrar cambios.
+- **Distribuidos** (Git, Mercurial): **cada copia local** del proyecto contiene la
+  historia completa. Puedes trabajar offline y luego sincronizar.
+
+Git pertenece a la segunda familia, y por eso es la herramienta estándar de la industria
+desde hace más de una década.
+
+<Callout type="info" title="Dato útil">
+Git fue creado en **2005 por Linus Torvalds** (el mismo que creó Linux) porque las
+herramientas existentes no daban abasto con el desarrollo del kernel.
+</Callout>
+
+## Instalación
+
+- **Windows:** descarga desde [git-scm.com](https://git-scm.com) — incluye Git Bash, una
+  consola con sabor a Unix que vas a usar en tu día a día.
+- **macOS:** ya viene preinstalado en muchas versiones, o instala con `brew install git`.
+- **Linux:** `sudo apt install git` (Debian/Ubuntu) o `sudo dnf install git` (Fedora).
+
+Para comprobar que quedó instalado, abre la terminal y escribe:
+
+<TerminalBlock>
+<span class="prompt">$</span> git --version
+<span class="out">git version 2.45.0</span>
+</TerminalBlock>
+
+Si te aparece la versión, ya estás listo.
+
+## Configuración inicial: dile a Git quién eres
+
+Para que Git pueda registrar quién es el **autor** de cada cambio, necesita saber tu
+**nombre** y tu **correo**. Esta información se asocia a cada modificación que hagas en
+los próximos proyectos, así que usa tu nombre real y tu correo institucional:
+
+<TerminalBlock>
+<span class="prompt">$</span> git config --global user.name "María González"
+<span class="prompt">$</span> git config --global user.email "mgonzalez@duocuc.cl"
+</TerminalBlock>
+
+El flag `--global` aplica esta configuración a **todos** los proyectos Git de tu equipo.
+Si quieres una configuración distinta sólo para un proyecto, usa `--local` dentro de su
+carpeta.
+
+Para revisar la configuración actual:
+
+<TerminalBlock>
+<span class="prompt">$</span> git config --list
+<span class="out">user.name=María González</span>
+<span class="out">user.email=mgonzalez@duocuc.cl</span>
+</TerminalBlock>
+
+## Dónde encontrar ayuda
+
+Git trae documentación incorporada. Las tres formas más útiles son:
+
+<TerminalBlock>
+<span class="prompt">$</span> git help            <span class="comment"># lista de comandos disponibles</span>
+<span class="prompt">$</span> git help config     <span class="comment"># manual completo de un comando</span>
+<span class="prompt">$</span> git config -h       <span class="comment"># resumen rápido del comando</span>
+</TerminalBlock>
+
+<Callout type="tip">
+En Git Bash, `git help <comando>` abre la página de manual en tu navegador. Si prefieres
+quedarte en la terminal, usa `git <comando> --help`.
+</Callout>
+
+## Ejemplo: caso de uso real
+
+Tu profesor te entrega el código base de un proyecto en clases. Lo descomprimes y abres
+en VS Code. Antes de **escribir una sola línea**, abre la terminal en esa carpeta y:
+
+<TerminalBlock>
+<span class="prompt">$</span> cd portafolio-2026
+<span class="prompt">$</span> git --version          <span class="comment"># verifica que Git está disponible</span>
+<span class="prompt">$</span> git config --global user.name "María González"
+<span class="prompt">$</span> git config --global user.email "mgonzalez@duocuc.cl"
+</TerminalBlock>
+
+Con esto Git ya sabe identificarte como autor cuando empieces a usarlo. En la próxima
+unidad vas a aprender a transformar una carpeta común en algo que Git puede acompañar a
+lo largo del tiempo.

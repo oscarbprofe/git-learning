@@ -1,0 +1,108 @@
+{
+  "unit": "u8",
+  "exercises": [
+    {
+      "id": "u8-e1",
+      "prompt": "Crea un tag anotado llamado `v1.0` con el mensaje 'Primera entrega'.",
+      "scenario": "Acabas de mergear todo a main y vas a marcar el commit de entrega del semestre.",
+      "accept": ["^git tag -a v1\\.0 -m \"Primera entrega\"$"],
+      "hint": "Necesitas el flag `-a` (annotated) y un `-m` con el mensaje.",
+      "expectedHint": "git tag -a v1.0 -m \"Primera entrega\"",
+      "value": 4
+    },
+    {
+      "id": "u8-e2",
+      "prompt": "Aplica el commit con hash `f4d3c2b` (de otra rama) sobre la rama actual.",
+      "scenario": "Tu compañera arregló un bug en `feature/login` con un solo commit, y necesitas ese fix urgentemente en tu rama de hotfix sin mezclar el resto.",
+      "accept": ["^git cherry-pick f4d3c2b$"],
+      "hint": "Es el comando para traer 'solo un commit' de otra rama.",
+      "expectedHint": "git cherry-pick f4d3c2b",
+      "value": 3
+    },
+    {
+      "id": "u8-e3",
+      "prompt": "Crea un alias global `st` que sea equivalente a `status`.",
+      "scenario": "Estás cansado de escribir `git status` mil veces al día. Define el atajo.",
+      "accept": ["^git config --global alias\\.st status$"],
+      "hint": "Sintaxis: `git config --global alias.<nombre> <comando>`.",
+      "expectedHint": "git config --global alias.st status",
+      "value": 2
+    },
+    {
+      "id": "u8-e4",
+      "prompt": "Reescribe los últimos 3 commits de forma interactiva.",
+      "scenario": "Antes de abrir tu Pull Request, quieres limpiar tus commits WIP y reorganizar.",
+      "accept": ["^git rebase -i HEAD~3$"],
+      "hint": "Es un rebase con flag interactivo, partiendo 3 commits atrás.",
+      "expectedHint": "git rebase -i HEAD~3",
+      "value": 3
+    }
+  ],
+  "quiz": [
+    {
+      "id": "u8-q1",
+      "prompt": "¿Cuál es la regla de oro del rebase?",
+      "options": [
+        { "key": "a", "label": "Usarlo en cada commit." },
+        { "key": "b", "label": "Nunca hacer rebase sobre commits que ya se compartieron en una rama colaborativa." },
+        { "key": "c", "label": "Sólo usarlo en remoto." },
+        { "key": "d", "label": "Sólo usarlo en Linux." }
+      ],
+      "correct": "b",
+      "explanation": "Rebase reescribe la historia (cambia hashes). Si otros ya tienen los commits originales, sus repos se desincronizarán. Úsalo solo en ramas privadas tuyas.",
+      "value": 3
+    },
+    {
+      "id": "u8-q2",
+      "prompt": "Según Conventional Commits, ¿cuál es el mensaje CORRECTO para un nuevo endpoint de pagos?",
+      "options": [
+        { "key": "a", "label": "Cambios varios" },
+        { "key": "b", "label": "Agregando endpoint" },
+        { "key": "c", "label": "feat(api): agrega endpoint de pagos" },
+        { "key": "d", "label": "BUGFIX-1234" }
+      ],
+      "correct": "c",
+      "explanation": "Conventional Commits: `<tipo>(<scope>): <descripción>`. Una nueva funcionalidad es `feat`, opcional con scope.",
+      "value": 2
+    },
+    {
+      "id": "u8-q3",
+      "prompt": "¿Para qué sirve `git cherry-pick <hash>`?",
+      "options": [
+        { "key": "a", "label": "Para borrar un commit." },
+        { "key": "b", "label": "Para aplicar un commit específico de otra rama sobre la rama actual." },
+        { "key": "c", "label": "Para crear un tag." },
+        { "key": "d", "label": "Para hacer un merge completo." }
+      ],
+      "correct": "b",
+      "explanation": "Cherry-pick toma los cambios de un commit puntual y los aplica como un nuevo commit en tu rama actual. Útil para hotfixes.",
+      "value": 3
+    },
+    {
+      "id": "u8-q4",
+      "prompt": "Los tags por defecto, ¿se suben al remoto al hacer `git push`?",
+      "options": [
+        { "key": "a", "label": "Sí, automáticamente." },
+        { "key": "b", "label": "No, hay que pushearlos explícitamente: `git push origin <tag>` o `git push --tags`." },
+        { "key": "c", "label": "Sólo si están anotados." },
+        { "key": "d", "label": "Sólo en GitLab." }
+      ],
+      "correct": "b",
+      "explanation": "`git push` no sube tags por defecto. Hay que pushearlos explícitamente con `git push origin v1.0` o `git push --tags` para subirlos todos.",
+      "value": 2
+    },
+    {
+      "id": "u8-q5",
+      "prompt": "Acabas de mergear una rama vía Pull Request. ¿Cuál es la siguiente buena práctica?",
+      "options": [
+        { "key": "a", "label": "Dejar la rama abierta para próximos cambios." },
+        { "key": "b", "label": "Renombrarla a main." },
+        { "key": "c", "label": "Hacer git reset --hard en main." },
+        { "key": "d", "label": "Eliminar la rama (local y remota), ya que cumplió su propósito." }
+      ],
+      "correct": "d",
+      "explanation": "Una rama de feature ya mergeada debe eliminarse. GitHub incluso ofrece el botón \"Delete branch\" en el PR mergeado. Mantiene limpio el repo.",
+      "value": 2
+    }
+  ]
+}

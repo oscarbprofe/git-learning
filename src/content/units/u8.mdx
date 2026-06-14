@@ -1,0 +1,163 @@
+---
+order: 8
+slug: u8
+title: Buenas prácticas y nivel pro
+description: rebase, tags, Conventional Commits, cherry-pick, alias, flujo profesional.
+points: 12
+---
+
+import TerminalBlock from '../../components/astro/TerminalBlock.astro';
+import Callout from '../../components/astro/Callout.astro';
+
+## Última unidad: del Git correcto al Git pro
+
+Si llegaste hasta aquí, ya sabes lo esencial para trabajar en cualquier equipo. Esta
+unidad te muestra las herramientas que separan a un usuario "promedio" de Git de un
+profesional eficiente.
+
+## `git rebase`: historia lineal
+
+`git merge` une dos ramas con un commit de merge especial. `git rebase` hace algo
+distinto: **mueve** los commits de tu rama para que parezca que partieron desde el
+último commit de la rama destino.
+
+<TerminalBlock>
+<span class="prompt">$</span> git switch feature/login
+<span class="prompt">$</span> git rebase main
+<span class="comment"># Reaplica tus commits encima del último commit de main</span>
+</TerminalBlock>
+
+Resultado: historia **lineal**, sin commits de merge, más fácil de leer.
+
+<Callout type="warn" title="La regla de oro del rebase">
+**Nunca hagas rebase sobre commits que ya compartiste (push) a una rama compartida.**
+Rebase reescribe historia (cambia los hashes); si otros tenían los commits originales,
+sus repos se desincronizan. Úsalo SÓLO en tus ramas privadas antes de mezclar.
+</Callout>
+
+### Rebase interactivo: limpiar antes de mezclar
+
+<TerminalBlock>
+<span class="prompt">$</span> git rebase -i HEAD~3
+<span class="comment"># Te abre un editor con los últimos 3 commits y opciones:</span>
+<span class="comment">#   pick     = mantener</span>
+<span class="comment">#   squash   = fusionar con el anterior</span>
+<span class="comment">#   reword   = cambiar mensaje</span>
+<span class="comment">#   drop     = eliminar</span>
+</TerminalBlock>
+
+Útil para "limpiar" tu rama antes de abrir el PR: unir commits con WIP, mejorar mensajes,
+eliminar experimentos fallidos.
+
+## `git tag`: marcar versiones
+
+Cuando entregas una versión del proyecto (por ejemplo, "Entrega 1"), creas un **tag**:
+un puntero permanente a un commit específico.
+
+<TerminalBlock>
+<span class="prompt">$</span> git tag v1.0                            <span class="comment"># tag liviano</span>
+<span class="prompt">$</span> git tag -a v1.0 -m "Primera entrega"    <span class="comment"># tag anotado (recomendado)</span>
+<span class="prompt">$</span> git push origin v1.0                    <span class="comment"># los tags no se pushean por defecto</span>
+<span class="prompt">$</span> git tag                                 <span class="comment"># listar tags</span>
+</TerminalBlock>
+
+En GitHub, los tags se convierten en **releases**: puntos descargables del proyecto en
+un estado fijo.
+
+## Conventional Commits
+
+Un estándar para mensajes de commit que tu equipo (y herramientas automáticas) pueden
+leer:
+
+```
+<tipo>(<scope>): <descripción corta>
+
+<cuerpo opcional>
+
+<pie opcional, ej. BREAKING CHANGE>
+```
+
+Tipos comunes:
+
+| Tipo | Cuándo usarlo |
+|------|--------------|
+| `feat` | Nueva funcionalidad |
+| `fix` | Corrección de bug |
+| `docs` | Cambios sólo de documentación |
+| `style` | Formato/estilo, sin cambios de lógica |
+| `refactor` | Refactor sin cambiar comportamiento |
+| `test` | Agregar/modificar tests |
+| `chore` | Tareas de mantención (configs, deps) |
+
+Ejemplos:
+
+```
+feat(auth): agrega login con Microsoft
+fix(login): valida correo vacío
+docs: actualiza README con instrucciones de deploy
+refactor(api): simplifica capa de servicios
+```
+
+Con esta convención, herramientas automáticas pueden generar el CHANGELOG y decidir el
+número de versión.
+
+## `git cherry-pick`: traer un commit específico
+
+A veces quieres aplicar **un solo commit** de otra rama (por ejemplo, un hotfix), sin
+mergear todo:
+
+<TerminalBlock>
+<span class="prompt">$</span> git cherry-pick a1b2c3d
+<span class="comment"># Aplica los cambios de a1b2c3d sobre tu rama actual</span>
+</TerminalBlock>
+
+## Alias: tus atajos personalizados
+
+Si te aburre escribir `git commit -m "..."` mil veces:
+
+<TerminalBlock>
+<span class="prompt">$</span> git config --global alias.cm "commit -m"
+<span class="prompt">$</span> git cm "Mi cambio"             <span class="comment"># ahora es equivalente</span>
+<span class="prompt">$</span> git config --global alias.lg "log --oneline --graph --all"
+<span class="prompt">$</span> git lg                         <span class="comment"># ¡log bonito!</span>
+</TerminalBlock>
+
+Algunos alias clásicos:
+
+```
+git config --global alias.st status
+git config --global alias.co checkout
+git config --global alias.br branch
+git config --global alias.ci commit
+```
+
+## Flujo profesional completo: ejemplo
+
+Te asignan agregar un endpoint nuevo en un proyecto del equipo:
+
+<TerminalBlock>
+<span class="prompt">$</span> git switch main && git pull
+<span class="prompt">$</span> git switch -c feat/endpoint-pagos
+<span class="comment"># ... programas, haces commits con Conventional Commits ...</span>
+<span class="prompt">$</span> git rebase -i HEAD~5        <span class="comment"># limpias commits WIP</span>
+<span class="prompt">$</span> git push -u origin feat/endpoint-pagos
+<span class="comment"># abres PR, recibes review, ajustas...</span>
+<span class="prompt">$</span> git push                    <span class="comment"># nuevos commits</span>
+<span class="comment"># PR aprobada, se mergea</span>
+<span class="prompt">$</span> git switch main && git pull
+<span class="prompt">$</span> git branch -d feat/endpoint-pagos
+</TerminalBlock>
+
+## Caso de uso real
+
+Estás cerrando la entrega del semestre. Tu equipo decide:
+
+1. **Limpiar las ramas:** `rebase -i` en cada rama de feature para dejar commits
+   significativos.
+2. **Conventional Commits** en todos los nuevos mensajes para que el README pueda generar
+   un CHANGELOG automático.
+3. **Tag v1.0**: una vez todo mergeado en main, marcas la entrega con un tag y la
+   subes como release en GitHub. El profe descarga ese release como entregable.
+
+A partir de aquí, Git deja de ser una caja negra y se convierte en una herramienta que
+**tú controlas**. ¡Felicitaciones por terminar el viaje!

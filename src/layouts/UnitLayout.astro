@@ -1,0 +1,96 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import UnitProgressIsland from '../components/islands/UnitProgressIsland.tsx';
+import UnitNav from '../components/islands/UnitNav.tsx';
+
+interface Props {
+  unit: {
+    slug: string;
+    order: number;
+    title: string;
+    description: string;
+    points: number;
+  };
+}
+const { unit } = Astro.props;
+---
+
+<BaseLayout title={`Unidad ${unit.order}: ${unit.title} — Git Challenge`} description={unit.description}>
+  <div class="container unit-container">
+    <div class="unit-head">
+      <a href="/" class="back-link">← Volver al mapa del viaje</a>
+      <div class="unit-meta">
+        <span class="unit-num">Unidad {unit.order} de 8</span>
+        <span aria-hidden="true">·</span>
+        <span>{unit.points} puntos</span>
+      </div>
+    </div>
+    <h1 class="unit-title">{unit.title}</h1>
+    <p class="unit-desc">{unit.description}</p>
+
+    <UnitProgressIsland unitSlug={unit.slug} client:load />
+
+    <article class="unit-body prose">
+      <slot />
+    </article>
+
+    <UnitNav unitSlug={unit.slug} order={unit.order} client:load />
+  </div>
+</BaseLayout>
+
+<style>
+  .unit-container {
+    padding: var(--sp-6) var(--sp-5);
+    max-width: 60rem;
+  }
+
+  .unit-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    margin-bottom: var(--sp-3);
+    flex-wrap: wrap;
+  }
+
+  .back-link {
+    color: var(--color-text-soft);
+    text-decoration: none;
+    font-size: var(--fs-sm);
+    font-weight: 700;
+  }
+
+  .back-link:hover {
+    color: var(--duoc-negro);
+  }
+
+  .unit-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    font-size: var(--fs-sm);
+    color: var(--color-text-soft);
+  }
+
+  .unit-num {
+    background: var(--duoc-amarillo);
+    color: var(--duoc-negro);
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    font-weight: 700;
+  }
+
+  .unit-title {
+    font-size: var(--fs-3xl);
+  }
+
+  .unit-desc {
+    font-size: var(--fs-md);
+    color: var(--color-text-soft);
+    margin-bottom: var(--sp-5);
+  }
+
+  .unit-body {
+    margin-top: var(--sp-5);
+  }
+</style>

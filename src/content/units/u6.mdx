@@ -1,0 +1,142 @@
+---
+order: 6
+slug: u6
+title: Repositorios remotos
+description: GitHub, clone, remote, push, pull, fetch, tracking branches, autenticación.
+points: 13
+---
+
+import TerminalBlock from '../../components/astro/TerminalBlock.astro';
+import Callout from '../../components/astro/Callout.astro';
+
+## El paso a la nube
+
+Hasta ahora todo tu repositorio vive **sólo en tu computador**. Si se daña el disco, lo
+pierdes todo. Y si quieres trabajar con compañeros, necesitas una forma de compartir el
+código.
+
+La solución son los **repositorios remotos**: copias del repositorio hospedadas en un
+servidor. El más popular es **GitHub**, pero también existen GitLab, Bitbucket y servidores
+propios.
+
+<Callout type="info" title="Local + remoto = ambos">
+Cuando trabajas con GitHub, **mantienes tu copia local completa** y la sincronizas con la
+del servidor. No estás "trabajando online": estás haciendo merge entre tu repo local y
+el remoto cuando tú decides.
+</Callout>
+
+## Clonar un repositorio existente: `git clone`
+
+Si el proyecto ya existe en GitHub:
+
+<TerminalBlock>
+<span class="prompt">$</span> git clone https://github.com/usuario/proyecto.git
+<span class="out">Cloning into 'proyecto'...</span>
+<span class="out">remote: Enumerating objects: 142, done.</span>
+<span class="out">Receiving objects: 100% (142/142), done.</span>
+</TerminalBlock>
+
+`git clone` hace tres cosas: descarga el repo, lo deja en una carpeta nueva y configura
+automáticamente el remoto con el alias `origin`.
+
+## Si partiste local: conectar un remoto
+
+<TerminalBlock>
+<span class="prompt">$</span> git remote add origin https://github.com/usuario/proyecto.git
+<span class="prompt">$</span> git remote -v
+<span class="out">origin  https://github.com/usuario/proyecto.git (fetch)</span>
+<span class="out">origin  https://github.com/usuario/proyecto.git (push)</span>
+</TerminalBlock>
+
+`origin` es solo un alias (un apodo) para la URL del remoto. Por convención, el remoto
+principal se llama `origin`, pero puedes tener varios:
+
+<TerminalBlock>
+<span class="prompt">$</span> git remote add upstream https://github.com/profesor/base.git
+</TerminalBlock>
+
+## Subir cambios: `git push`
+
+Envía tus commits locales al remoto:
+
+<TerminalBlock>
+<span class="prompt">$</span> git push -u origin main
+<span class="comment"># -u "trackea" la rama: futuros push/pull pueden hacerse sin args</span>
+<span class="prompt">$</span> git push
+<span class="comment"># las siguientes veces basta con esto</span>
+</TerminalBlock>
+
+<Callout type="warn" title="No hagas push --force a ramas compartidas">
+`git push --force` (o `--force-with-lease`) reescribe la historia remota. Si tu equipo
+tenía la versión antigua, sus repos quedan desincronizados. Usa `revert` en su lugar.
+</Callout>
+
+## Bajar cambios: `git pull` y `git fetch`
+
+- **`git fetch`** descarga los commits del remoto a tu repositorio local **sin
+  modificar tu rama actual**. Útil para "espiar" qué hizo el equipo antes de mezclar.
+- **`git pull`** = `git fetch` + `git merge` automático. Sincroniza tu rama actual con
+  el remoto.
+
+<TerminalBlock>
+<span class="prompt">$</span> git fetch origin             <span class="comment"># trae cambios sin aplicarlos</span>
+<span class="prompt">$</span> git log origin/main          <span class="comment"># revisas qué llegó</span>
+<span class="prompt">$</span> git pull                     <span class="comment"># si te gusta, mezclas</span>
+</TerminalBlock>
+
+## Autenticación con GitHub
+
+Desde 2021 GitHub ya no permite autenticarse con tu contraseña habitual. Las opciones son:
+
+1. **Personal Access Token (PAT):** generas un token en
+   `github.com/settings/tokens` y lo usas como contraseña al hacer push HTTPS.
+   Fácil de configurar; expira.
+2. **SSH:** generas un par de llaves (`ssh-keygen -t ed25519`) y subes la pública a
+   GitHub. Más cómodo para uso diario una vez configurado.
+3. **GitHub CLI (`gh auth login`):** la forma más simple en desarrollo personal.
+
+<Callout type="tip">
+Para este curso te recomendamos partir con PAT o GitHub CLI: son más rápidos de configurar
+y suficientes para todo lo que harás en primer año.
+</Callout>
+
+## Tracking branches
+
+Una rama local puede estar "trackeando" una rama remota. Eso significa que `git status`
+te dice "tu rama va 2 commits adelante de origin/main" y que `git push` / `git pull` saben
+solos a dónde apuntar.
+
+<TerminalBlock>
+<span class="prompt">$</span> git branch -vv
+<span class="out">* main a1b2c3d [origin/main: ahead 2] Agrega login</span>
+</TerminalBlock>
+
+`git push -u origin <rama>` la primera vez es lo que crea el tracking.
+
+## Ejemplo: el ciclo diario
+
+<TerminalBlock>
+<span class="prompt">$</span> git pull                       <span class="comment"># traes lo último del equipo</span>
+<span class="comment"># ... editas, agregas commits ...</span>
+<span class="prompt">$</span> git push                       <span class="comment"># compartes tus cambios</span>
+</TerminalBlock>
+
+Ese es, literalmente, el 80% del uso diario de Git para alguien que recién empieza.
+
+## Caso de uso real
+
+Tu profesor te entrega el URL del repositorio inicial del proyecto en GitHub, donde tu
+equipo tiene permiso de push directo. Para trabajar:
+
+1. Creas tu cuenta en GitHub con tu correo `@duocuc.cl`.
+2. `git clone <url>` a tu computador.
+3. Configuras `git config --global user.name/user.email` con tu identidad institucional
+   (eso ya lo aprendiste en la Unidad 1).
+4. Creas tu rama de trabajo, haces commits localmente.
+5. `git push` para enviar tus cambios al servidor donde tu equipo los verá.
+6. Al día siguiente, antes de seguir, `git pull` para traer lo que avanzaron tus
+   compañeros.
+
+Trabajar en escenarios donde **varias personas** comparten un repositorio (con
+revisión de código, propuestas formales de cambios, etc.) es el tema de la próxima
+unidad.

@@ -1,0 +1,155 @@
+---
+order: 4
+slug: u4
+title: Deshacer cambios
+description: restore, reset (soft/mixed/hard), revert, stash. Cuándo usar cada uno.
+points: 14
+---
+
+import TerminalBlock from '../../components/astro/TerminalBlock.astro';
+import Callout from '../../components/astro/Callout.astro';
+
+## Deshacer en Git: cuatro herramientas, no una
+
+Git tiene **cuatro maneras** distintas de "deshacer" cambios, dependiendo de dónde están
+esos cambios y qué quieres conseguir. Confundirlas es la fuente #1 de frustración entre
+principiantes. Esta es tu tabla de decisión:
+
+| Quiero… | Comando |
+|---------|---------|
+| Botar cambios del working directory (no agregados todavía) | `git restore archivo` |
+| Sacar algo del staging (sin botar los cambios) | `git restore --staged archivo` |
+| Reescribir mi historia (mientras esté sólo en mi computador) | `git reset` (soft/mixed/hard) |
+| Crear un commit que deshace otro de forma segura | `git revert <hash>` |
+| Guardar cambios pendientes para después | `git stash` |
+
+<Callout type="info" title="Un concepto que se profundiza más adelante">
+En esta unidad mencionaremos algo que verás formalmente en la Unidad 6: en algún momento
+querrás **compartir tu historia con un servidor remoto** para que tu equipo la vea. Una
+vez que pasa eso, algunas formas de "deshacer" se vuelven peligrosas porque desincronizan
+al equipo. Para esos casos existe `revert`. Hasta entonces, mientras la historia viva
+sólo en tu computador, puedes usar libremente `reset` y `--amend`.
+</Callout>
+
+## `git restore`: el moderno "deshacer cambios locales"
+
+<TerminalBlock>
+<span class="prompt">$</span> git restore login.js
+<span class="comment"># vuelve login.js al estado del último commit (descarta cambios)</span>
+</TerminalBlock>
+
+Para sacar algo del staging area:
+
+<TerminalBlock>
+<span class="prompt">$</span> git restore --staged login.js
+<span class="comment"># login.js sigue modificado, pero ya no está en el staging</span>
+</TerminalBlock>
+
+<Callout type="warn">
+`git restore` sin `--staged` **borra cambios sin posibilidad de recuperarlos**. Asegúrate.
+</Callout>
+
+## `git reset`: viajar a un commit anterior
+
+`git reset` mueve el puntero `HEAD` a otro commit. `HEAD` es el nombre que Git le da al
+**commit actual** en el que estás parado. Es como un marcador que dice "aquí estoy ahora".
+
+`git reset` tiene tres modos según qué pasa con los cambios del working directory y el
+staging area:
+
+<TerminalBlock>
+<span class="prompt">$</span> git reset --soft &lt;hash&gt;
+<span class="comment"># HEAD apunta al commit elegido; cambios quedan EN STAGING</span>
+
+<span class="prompt">$</span> git reset --mixed &lt;hash&gt;    <span class="comment"># default si omites el flag</span>
+<span class="comment"># HEAD apunta al commit elegido; cambios quedan en WORKING DIRECTORY</span>
+
+<span class="prompt">$</span> git reset --hard &lt;hash&gt;
+<span class="comment"># HEAD apunta al commit elegido; cambios SE BORRAN</span>
+</TerminalBlock>
+
+**Atajo útil:** `HEAD~1` significa "un commit antes de HEAD", `HEAD~2` "dos antes", etc.
+
+<Callout type="warn" title="--hard borra trabajo">
+`git reset --hard` es **destructivo**. Si tenías cambios sin guardar en un commit, los
+pierdes. Úsalo sólo cuando estés seguro.
+</Callout>
+
+## `git revert`: deshacer respetando la historia
+
+A veces necesitas deshacer un commit **sin reescribir la historia**. En vez de borrar el
+commit malo, **creas un commit nuevo que aplica el cambio inverso**:
+
+<TerminalBlock>
+<span class="prompt">$</span> git revert a1b2c3d
+<span class="comment"># Git crea un nuevo commit que "deshace" lo que hizo a1b2c3d</span>
+</TerminalBlock>
+
+La historia queda como: commit malo → commit que lo revierte. Ambos quedan registrados,
+y nadie pierde el rastro de lo que pasó.
+
+¿Cuándo es esto preferible a `reset`? Cuando vas a compartir esa historia con tu equipo
+(Unidad 6): si ellos ya la tienen, no la puedes borrar; sólo puedes agregar un commit
+encima que la corrige.
+
+## `git stash`: guardar cambios "en el bolsillo"
+
+A veces estás a medias de un cambio y necesitas cambiar de tarea (por ejemplo, hay que
+arreglar otra cosa urgente). `git stash` guarda tus cambios y deja el working directory
+limpio:
+
+<TerminalBlock>
+<span class="prompt">$</span> git stash
+<span class="out">Saved working directory and index state WIP on main: ...</span>
+<span class="prompt">$</span> git stash list             <span class="comment"># ver tu pila de stashes</span>
+<span class="prompt">$</span> git stash pop              <span class="comment"># recuperar el último y borrarlo</span>
+<span class="prompt">$</span> git stash apply            <span class="comment"># recuperar sin borrarlo</span>
+</TerminalBlock>
+
+## Comparación rápida: reset vs revert
+
+| | `git reset` | `git revert` |
+|--|-------------|--------------|
+| Modifica la historia | Sí, la reescribe | No, agrega un commit nuevo |
+| Seguro si tu equipo ya tiene la historia | ❌ No | ✅ Sí |
+| Útil en | Tu trabajo local privado | Cuando la historia ya no es sólo tuya |
+
+## Ejemplo: tres situaciones reales
+
+**1. "Modifiqué un archivo, pero me arrepentí (no hice add)":**
+
+<TerminalBlock>
+<span class="prompt">$</span> git restore login.js
+</TerminalBlock>
+
+**2. "Acabo de commitear y me equivoqué de mensaje":**
+
+<TerminalBlock>
+<span class="prompt">$</span> git commit --amend -m "Mensaje correcto"
+</TerminalBlock>
+
+**3. "Hice tres commits y el del medio rompió algo. No puedo amendar porque no es el
+último. Tampoco quiero perder los dos commits buenos que vinieron después":**
+
+<TerminalBlock>
+<span class="prompt">$</span> git log --oneline    <span class="comment"># buscas el hash del commit malo</span>
+<span class="prompt">$</span> git revert &lt;hash-malo&gt;
+<span class="comment"># Git crea un commit que aplica el cambio inverso. La historia queda intacta.</span>
+</TerminalBlock>
+
+## Caso de uso real
+
+Estás trabajando en el proyecto del semestre. Anoche hiciste un commit donde, sin
+querer, eliminaste una función importante. Encima de ese commit ya hiciste otros dos
+commits con trabajo válido que sí quieres conservar.
+
+Como el commit malo **no es el último**, `--amend` no sirve. `reset --hard` borraría
+también los dos buenos. La solución correcta es:
+
+1. `git log --oneline` para ubicar el hash del commit malo.
+2. `git revert <hash-malo>` — Git crea un commit que aplica exactamente el cambio
+   inverso. La función eliminada vuelve, los otros dos commits se conservan, y la
+   historia queda completa.
+
+Saber elegir la herramienta correcta de "deshacer" es lo que distingue a alguien que usa
+Git con miedo de alguien que lo controla.

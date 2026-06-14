@@ -1,0 +1,69 @@
+---
+interface Props {
+  type?: 'info' | 'tip' | 'warn' | 'real';
+  title?: string;
+}
+const { type = 'info', title } = Astro.props;
+const icons: Record<string, string> = {
+  info: 'ℹ',
+  tip: '✦',
+  warn: '⚠',
+  real: '◉',
+};
+const defaultTitles: Record<string, string> = {
+  info: 'Para tener en cuenta',
+  tip: 'Tip',
+  warn: 'Atención',
+  real: 'Caso de uso real',
+};
+---
+
+<aside class:list={['callout', `callout-${type}`]} role="note">
+  <div class="callout-title">
+    <span class="icon" aria-hidden="true">{icons[type]}</span>
+    {title ?? defaultTitles[type]}
+  </div>
+  <div class="callout-body">
+    <slot />
+  </div>
+</aside>
+
+<style>
+  .callout {
+    border-left: 4px solid;
+    padding: var(--sp-3) var(--sp-4);
+    border-radius: var(--radius-sm);
+    margin: var(--sp-4) 0;
+    background: var(--duoc-gris-fondo);
+  }
+
+  .callout-info {
+    border-color: var(--duoc-azul-escuela);
+  }
+  .callout-tip {
+    border-color: var(--color-success);
+    background: #f1f8f3;
+  }
+  .callout-warn {
+    border-color: var(--color-warning);
+    background: #fff7e8;
+  }
+  .callout-real {
+    border-color: var(--duoc-amarillo);
+    background: #fffaef;
+  }
+
+  .callout-title {
+    font-weight: 700;
+    margin-bottom: var(--sp-2);
+    color: var(--duoc-negro);
+  }
+
+  .icon {
+    margin-right: 0.4em;
+  }
+
+  .callout-body :global(p:last-child) {
+    margin-bottom: 0;
+  }
+</style>

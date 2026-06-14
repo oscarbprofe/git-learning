@@ -1,0 +1,108 @@
+{
+  "unit": "u7",
+  "exercises": [
+    {
+      "id": "u7-e1",
+      "prompt": "Crea una rama llamada `feature/perfil-usuario` y muévete a ella.",
+      "scenario": "Vas a trabajar en la sección de perfil. Crea la rama y cámbiate en un solo comando.",
+      "accept": ["^git switch -c feature/perfil-usuario$", "^git checkout -b feature/perfil-usuario$"],
+      "hint": "Sintaxis: `git switch -c <rama>` (moderna) o `git checkout -b <rama>` (clásica).",
+      "expectedHint": "git switch -c feature/perfil-usuario",
+      "value": 3
+    },
+    {
+      "id": "u7-e2",
+      "prompt": "Sube tu rama `feature/perfil-usuario` al remoto `origin` por primera vez.",
+      "scenario": "Acabas de terminar el trabajo en tu rama y quieres abrir un Pull Request. Súbela con tracking.",
+      "accept": ["^git push -u origin feature/perfil-usuario$", "^git push --set-upstream origin feature/perfil-usuario$"],
+      "hint": "Necesitas crear el tracking la primera vez (flag `-u`).",
+      "expectedHint": "git push -u origin feature/perfil-usuario",
+      "value": 4
+    },
+    {
+      "id": "u7-e3",
+      "prompt": "Sincroniza tu rama local `main` con los últimos cambios del remoto.",
+      "scenario": "Antes de crear una nueva rama de feature, quieres asegurarte de partir desde lo último mezclado por el equipo.",
+      "accept": ["^git pull origin main$", "^git pull$"],
+      "hint": "Si tu rama main ya tiene tracking con origin/main, basta el pull sin parámetros.",
+      "expectedHint": "git pull origin main",
+      "value": 3
+    },
+    {
+      "id": "u7-e4",
+      "prompt": "Lista las ramas REMOTAS conocidas en tu repositorio local.",
+      "scenario": "Tu compañera pusheó una rama nueva y quieres ver qué ramas remotas existen.",
+      "accept": ["^git branch -r$", "^git branch --remotes$"],
+      "hint": "Es un flag del comando `git branch`.",
+      "expectedHint": "git branch -r",
+      "value": 3
+    }
+  ],
+  "quiz": [
+    {
+      "id": "u7-q1",
+      "prompt": "¿Cuál es la diferencia esencial entre Fork y Clone?",
+      "options": [
+        { "key": "a", "label": "Son sinónimos." },
+        { "key": "b", "label": "Fork crea una copia en GitHub (en tu cuenta); Clone baja un repo a tu computador." },
+        { "key": "c", "label": "Fork sólo funciona en GitLab." },
+        { "key": "d", "label": "Clone necesita permisos de admin." }
+      ],
+      "correct": "b",
+      "explanation": "Fork es una operación de GitHub: copia el repo a tu cuenta. Clone es una operación de Git local: baja el repo a tu máquina. Para colaborar en algo ajeno, normalmente combinas ambos.",
+      "value": 2
+    },
+    {
+      "id": "u7-q2",
+      "prompt": "¿Qué es un Pull Request?",
+      "options": [
+        { "key": "a", "label": "Un comando de Git para descargar cambios." },
+        { "key": "b", "label": "Una propuesta formal en GitHub para mezclar tu rama al proyecto, con review y discusión." },
+        { "key": "c", "label": "Una rama protegida." },
+        { "key": "d", "label": "Un alias de git pull." }
+      ],
+      "correct": "b",
+      "explanation": "Un PR es la unidad de propuesta y review en GitHub: permite revisar, discutir y mergear cambios de forma ordenada.",
+      "value": 3
+    },
+    {
+      "id": "u7-q3",
+      "prompt": "¿Qué pasa si en la descripción de tu PR escribes `Closes #42`?",
+      "options": [
+        { "key": "a", "label": "Se cierra tu PR." },
+        { "key": "b", "label": "Al mergearse el PR, el issue #42 se cierra automáticamente." },
+        { "key": "c", "label": "No hace nada." },
+        { "key": "d", "label": "Bloquea el issue." }
+      ],
+      "correct": "b",
+      "explanation": "GitHub reconoce palabras clave como `Closes`, `Fixes`, `Resolves` seguidas de `#N` y cierra automáticamente ese issue cuando se mergea el PR.",
+      "value": 3
+    },
+    {
+      "id": "u7-q4",
+      "prompt": "¿Cuál es una buena práctica en un code review?",
+      "options": [
+        { "key": "a", "label": "Aprobar rápido sin leer para no molestar." },
+        { "key": "b", "label": "Hacer comentarios específicos a líneas de código y ser amable: 'esto podría romperse si X' en lugar de 'esto está mal'." },
+        { "key": "c", "label": "Reescribir todo el código tú mismo." },
+        { "key": "d", "label": "Mandar el feedback por chat privado." }
+      ],
+      "correct": "b",
+      "explanation": "El review es sobre el CÓDIGO, no sobre la persona. Comenta específicamente, con tono constructivo, y deja registro escrito.",
+      "value": 3
+    },
+    {
+      "id": "u7-q5",
+      "prompt": "Según el GitHub Flow, ¿cuál es el paso correcto al terminar una feature?",
+      "options": [
+        { "key": "a", "label": "Hacer commit directo a main." },
+        { "key": "b", "label": "Crear una rama desde main, trabajar, push, abrir PR, discutir, mergear, borrar la rama." },
+        { "key": "c", "label": "Hacer fork del repo cada vez." },
+        { "key": "d", "label": "Subir el código por correo." }
+      ],
+      "correct": "b",
+      "explanation": "GitHub Flow: rama → commits → push → PR → review → merge → cleanup. Main siempre queda en estado entregable.",
+      "value": 2
+    }
+  ]
+}

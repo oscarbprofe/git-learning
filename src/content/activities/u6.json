@@ -1,0 +1,108 @@
+{
+  "unit": "u6",
+  "exercises": [
+    {
+      "id": "u6-e1",
+      "prompt": "Clona el repositorio https://github.com/duoc/portafolio.git en tu máquina.",
+      "scenario": "Recién recibiste el URL del proyecto en clases. Tráelo a tu computador.",
+      "accept": ["^git clone https://github\\.com/duoc/portafolio\\.git$"],
+      "hint": "Un solo subcomando seguido del URL.",
+      "expectedHint": "git clone https://github.com/duoc/portafolio.git",
+      "value": 3
+    },
+    {
+      "id": "u6-e2",
+      "prompt": "Agrega un remoto llamado `origin` que apunta a https://github.com/maria/app.git",
+      "scenario": "Tu repo ya existe localmente y quieres conectarlo por primera vez con GitHub.",
+      "accept": ["^git remote add origin https://github\\.com/maria/app\\.git$"],
+      "hint": "Sintaxis: `git remote add <alias> <url>`.",
+      "expectedHint": "git remote add origin https://github.com/maria/app.git",
+      "value": 4
+    },
+    {
+      "id": "u6-e3",
+      "prompt": "Sube por primera vez la rama `main` al remoto `origin`, dejándola trackeada.",
+      "scenario": "Hiciste tus primeros commits y `git remote add origin ...`. Ahora súbelos.",
+      "accept": ["^git push -u origin main$", "^git push --set-upstream origin main$"],
+      "hint": "El flag `-u` (o `--set-upstream`) es lo que crea el tracking.",
+      "expectedHint": "git push -u origin main",
+      "value": 4
+    },
+    {
+      "id": "u6-e4",
+      "prompt": "Sincroniza tu rama actual con los últimos cambios del remoto.",
+      "scenario": "Tu compañera pushea**ron** cambios y necesitas traerlos a tu copia local. Usa el comando más usado del día a día.",
+      "accept": ["^git pull$"],
+      "hint": "Combina fetch + merge en un solo paso.",
+      "expectedHint": "git pull",
+      "value": 2
+    }
+  ],
+  "quiz": [
+    {
+      "id": "u6-q1",
+      "prompt": "¿Qué tres cosas hace `git clone <url>`?",
+      "options": [
+        { "key": "a", "label": "Descarga el repo, lo deja en una nueva carpeta y configura el remoto `origin` apuntando al URL." },
+        { "key": "b", "label": "Crea un repo vacío y lo conecta al remoto." },
+        { "key": "c", "label": "Borra el remoto y deja sólo lo local." },
+        { "key": "d", "label": "Empuja tus cambios al remoto." }
+      ],
+      "correct": "a",
+      "explanation": "`git clone` descarga la historia, crea una carpeta con el contenido y configura automáticamente `origin` apuntando al URL del que clonaste.",
+      "value": 2
+    },
+    {
+      "id": "u6-q2",
+      "prompt": "¿Cuál es la diferencia entre `git fetch` y `git pull`?",
+      "options": [
+        { "key": "a", "label": "Son sinónimos." },
+        { "key": "b", "label": "`fetch` sólo descarga commits sin mezclarlos; `pull` = fetch + merge automático en tu rama actual." },
+        { "key": "c", "label": "`pull` sólo sirve para ramas remotas." },
+        { "key": "d", "label": "`fetch` sube cambios y `pull` los descarga." }
+      ],
+      "correct": "b",
+      "explanation": "fetch trae commits sin tocar tu rama (útil para inspeccionar). pull los trae Y los mergea automáticamente.",
+      "value": 3
+    },
+    {
+      "id": "u6-q3",
+      "prompt": "¿Qué significa que `origin` sea un alias?",
+      "options": [
+        { "key": "a", "label": "Es un comando especial de Git." },
+        { "key": "b", "label": "Es sólo un apodo para la URL del remoto principal." },
+        { "key": "c", "label": "Es la rama por defecto." },
+        { "key": "d", "label": "Es el commit inicial." }
+      ],
+      "correct": "b",
+      "explanation": "`origin` es la convención de nombre para el remoto principal, pero es sólo un alias: podrías llamarlo distinto y tener varios remotos.",
+      "value": 2
+    },
+    {
+      "id": "u6-q4",
+      "prompt": "Desde 2021, ¿qué métodos de autenticación acepta GitHub para HTTPS?",
+      "options": [
+        { "key": "a", "label": "Tu contraseña habitual." },
+        { "key": "b", "label": "Personal Access Token (PAT), SSH o GitHub CLI." },
+        { "key": "c", "label": "Sólo SSH." },
+        { "key": "d", "label": "Sólo OAuth con Google." }
+      ],
+      "correct": "b",
+      "explanation": "GitHub ya no permite la contraseña de cuenta para Git por HTTPS. Las alternativas son PAT, llaves SSH o `gh auth login`.",
+      "value": 2
+    },
+    {
+      "id": "u6-q5",
+      "prompt": "¿Por qué es peligroso usar `git push --force` en una rama compartida?",
+      "options": [
+        { "key": "a", "label": "Porque borra el remoto." },
+        { "key": "b", "label": "Porque reescribe la historia remota y desincroniza a quienes ya tienen la versión antigua." },
+        { "key": "c", "label": "Porque requiere permisos especiales." },
+        { "key": "d", "label": "No es peligroso, es lo recomendado." }
+      ],
+      "correct": "b",
+      "explanation": "Force push reescribe la historia que ya tenían tus compañeros. Es la receta para conflictos masivos. Usa `revert` en su lugar.",
+      "value": 4
+    }
+  ]
+}

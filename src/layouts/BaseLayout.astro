@@ -1,0 +1,36 @@
+---
+import '../styles/global.css';
+import Header from '../components/astro/Header.astro';
+import Footer from '../components/astro/Footer.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  showHeader?: boolean;
+}
+const {
+  title = 'Git Challenge — Duoc UC',
+  description = 'Viaje de aprendizaje de Git para estudiantes de primer año de Ingeniería Informática, Duoc UC.',
+  showHeader = true,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es-CL">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f1b634" />
+    <title>{title}</title>
+  </head>
+  <body>
+    {showHeader && <Header />}
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

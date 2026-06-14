@@ -1,0 +1,144 @@
+---
+order: 7
+slug: u7
+title: Colaboración en equipo
+description: Fork, Pull Request, code review, GitHub Flow, issues, README.
+points: 13
+---
+
+import TerminalBlock from '../../components/astro/TerminalBlock.astro';
+import Callout from '../../components/astro/Callout.astro';
+
+## Trabajar en equipo: el flujo profesional
+
+Saber Git como herramienta solitaria es la mitad del aprendizaje. La otra mitad es saber
+**colaborar** con otros desarrolladores: proponer cambios, revisar el código de tus
+compañeros y ponerse de acuerdo.
+
+## Fork: tu propia copia del proyecto
+
+En proyectos open source o cuando no tienes permiso de push directo en un repositorio,
+haces un **fork**: una copia en tu cuenta de GitHub.
+
+1. Vas al repositorio (por ejemplo, `github.com/duoc/portafolio`) y aprietas el botón
+   **Fork**.
+2. GitHub crea `github.com/tu-usuario/portafolio` con todo el código y la historia.
+3. Clonas TU fork (no el original) a tu computador.
+
+A partir de ahí trabajas en tu fork como si fuera tuyo, sin afectar el original.
+
+<Callout type="info" title="Fork vs Clone">
+- **Clone** baja el repo a tu máquina.
+- **Fork** crea una copia en GitHub, asociada a tu cuenta.
+Para colaborar en algo que no es tuyo, normalmente combinas ambos: fork → clone.
+</Callout>
+
+## Pull Request: pedir que mezclen tu cambio
+
+Un **Pull Request (PR)** es una propuesta formal de "oye, mi rama tiene estos cambios,
+¿quieren mezclarlos al proyecto?". Es el mecanismo donde:
+
+- Tu cambio queda **revisable** por otras personas.
+- Se discute el código línea por línea.
+- Se ejecutan tests automáticos (CI).
+- Cuando todo está OK, alguien con permisos hace el merge.
+
+### Cómo hacer un PR
+
+1. En tu fork local, creas una rama: `git switch -c feature/mi-cambio`.
+2. Haces commits con tu trabajo.
+3. `git push -u origin feature/mi-cambio`.
+4. En GitHub, aparece un banner amarillo "Compare & pull request". Lo aprietas.
+5. Escribes un **título** y una **descripción** claros del cambio.
+6. Asignas revisores y esperas feedback.
+
+### Cómo es una buena descripción de PR
+
+```markdown
+## Qué cambia
+Agrega validación al formulario de login (correo, mínimo 8 chars en password).
+
+## Por qué
+Antes era posible enviar el formulario vacío y el backend explotaba.
+
+## Cómo probarlo
+1. Ir a /login
+2. Apretar "Iniciar sesión" sin llenar nada
+3. Verificar que aparece el mensaje de error
+```
+
+## Code review: revisar y ser revisado
+
+Cuando revises un PR de un compañero:
+
+- **Mira el código línea por línea**, no sólo si "funciona".
+- **Comenta** de forma específica: "esta línea podría romperse si X" en vez de "esto está mal".
+- **Sé amable**: el código es del autor, no eres tú. Sugiere, no impongas.
+
+Cuando te revisen:
+
+- **No lo tomes personal.** El review es del código.
+- **Responde** cada comentario (con un cambio o explicando por qué dejarlo así).
+- **Itera**: hace cambios → nuevo push → la PR se actualiza sola.
+
+## GitHub Flow: el ciclo completo
+
+Este es el flujo más popular para equipos chicos:
+
+1. **Crea una rama** desde main para cada cambio (feature, bugfix, etc.).
+2. **Trabaja** en esa rama (commits locales).
+3. **Push** a tu fork u origin.
+4. **Abre un PR** apuntando a main.
+5. **Discute** con revisores y haz cambios.
+6. **Merge** cuando todo esté OK.
+7. **Borra la rama** una vez fusionada.
+
+## Issues: el sistema de tickets
+
+Un **issue** en GitHub es un ticket: puede ser un bug, una feature pedida, una pregunta.
+Sirven para:
+
+- Tener visible qué se necesita hacer.
+- Coordinar quién hace qué.
+- Discutir antes de programar (¡muchas veces más barato que después!).
+
+Puedes **vincular un PR a un issue** escribiendo `Closes #42` en la descripción. Al
+mergearse el PR, el issue se cierra automáticamente.
+
+## README.md: la portada de tu proyecto
+
+Es el primer archivo que ve cualquiera que entre a tu repositorio en GitHub. Un buen
+README incluye:
+
+```markdown
+# Nombre del proyecto
+
+Una frase corta que explica qué hace.
+
+## Instalación
+Instrucciones paso a paso para correr el proyecto localmente.
+
+## Uso
+Cómo se usa (con ejemplos).
+
+## Tecnologías
+Lista breve.
+
+## Autores
+Tu equipo.
+```
+
+GitHub lo renderiza automáticamente como página de inicio del repo.
+
+## Caso de uso real
+
+Tu equipo de 4 personas debe entregar el proyecto del semestre. Acuerdan este flujo:
+
+1. **Repo del proyecto en la cuenta de uno** del grupo (no fork, todos tienen permiso de push).
+2. **Cada persona crea su rama** por feature (`feature/login`, `feature/dashboard`, etc.).
+3. **Antes de mezclar a main**, se abre un PR y al menos OTRO integrante revisa.
+4. **Issues** para llevar el track de tareas pendientes y bugs reportados por el grupo.
+5. **README** con instrucciones para que el profe pueda correr la app desde cero.
+
+Esta forma de trabajar reproduce exactamente cómo lo hace un equipo profesional: el día
+que entres a un trabajo real, ya sabrás moverte.

@@ -1,0 +1,138 @@
+---
+order: 2
+slug: u2
+title: Mi primer repositorio
+description: init, working directory, staging area, repositorio, status, add, commit, log.
+points: 12
+---
+
+import TerminalBlock from '../../components/astro/TerminalBlock.astro';
+import Callout from '../../components/astro/Callout.astro';
+
+## Las tres áreas de Git
+
+Esta es la idea más importante de toda la unidad. Cada archivo de tu proyecto vive en una
+de tres "áreas":
+
+1. **Working directory (directorio de trabajo):** las carpetas y archivos como los ves en
+   tu computador. Es donde editas con VS Code.
+2. **Staging area (área de preparación):** la "bandeja de salida". Aquí pones los cambios
+   que quieres incluir en la próxima foto de la historia. Funciona como una lista de
+   revisión: tú eliges qué entra.
+3. **Repositorio (`.git`):** la base de datos donde Git guarda la historia oficial del
+   proyecto, en forma de **commits** (instantáneas guardadas para siempre con un mensaje
+   y un autor).
+
+<Callout type="info" title="Por qué existen tres áreas">
+Esta separación es lo que hace Git tan flexible. Puedes tener 10 archivos modificados y
+decidir empaquetar **sólo 3** en el próximo commit, dejando los otros para más tarde.
+</Callout>
+
+## Crear el repositorio: `git init`
+
+Convierte cualquier carpeta normal en un repositorio Git:
+
+<TerminalBlock>
+<span class="prompt">$</span> cd portafolio-2026
+<span class="prompt">$</span> git init
+<span class="out">Initialized empty Git repository in /home/maria/portafolio-2026/.git/</span>
+</TerminalBlock>
+
+Se creó una carpeta oculta `.git/` que contiene **toda** la maquinaria de Git:
+configuración del repositorio y la historia completa de tus cambios. Si la borras,
+pierdes el repositorio (los archivos siguen, pero su historia desaparece).
+
+## Ver el estado: `git status`
+
+Tu nuevo mejor amigo. Te dice qué cambió, qué está preparado para commit y qué no.
+
+<TerminalBlock>
+<span class="prompt">$</span> echo "# Portafolio 2026" > README.md
+<span class="prompt">$</span> git status
+<span class="out">On branch main</span>
+<span class="out">No commits yet</span>
+<span class="out">Untracked files: README.md</span>
+</TerminalBlock>
+
+"Untracked" significa que Git ve el archivo, pero todavía no le hace seguimiento.
+
+<Callout type="info">
+Vas a notar la línea `On branch main`. Las **ramas** son el tema de la Unidad 5; por
+ahora basta con saber que `main` es la línea de trabajo principal y por defecto.
+</Callout>
+
+## Preparar cambios: `git add`
+
+Mueve archivos del working directory al staging area:
+
+<TerminalBlock>
+<span class="prompt">$</span> git add README.md
+<span class="prompt">$</span> git status
+<span class="out">Changes to be committed:</span>
+<span class="out">  new file: README.md</span>
+</TerminalBlock>
+
+Variantes útiles:
+
+- `git add archivo.txt` — un archivo específico
+- `git add .` — todos los cambios de la carpeta actual hacia abajo
+- `git add -A` — todos los cambios del repo (incluyendo eliminaciones)
+
+## Confirmar el commit: `git commit`
+
+Toma el contenido del staging area y crea un commit permanente en la historia:
+
+<TerminalBlock>
+<span class="prompt">$</span> git commit -m "Agrega README inicial"
+<span class="out">[main (root-commit) a1b2c3d] Agrega README inicial</span>
+<span class="out">  1 file changed, 1 insertion(+)</span>
+<span class="out">  create mode 100644 README.md</span>
+</TerminalBlock>
+
+El `-m` te permite escribir el mensaje en línea. Sin `-m`, Git abre un editor para que
+escribas un mensaje más extenso.
+
+### Qué es un buen mensaje de commit
+
+- **En presente / imperativo**: "Agrega X", "Corrige Y", no "Agregué" ni "Agregando".
+- **Breve y descriptivo**: ≤ 72 caracteres en la primera línea.
+- **Explica el porqué** si no es obvio: agrega un párrafo extra en líneas siguientes.
+
+## Ver la historia: `git log`
+
+<TerminalBlock>
+<span class="prompt">$</span> git log
+<span class="out">commit a1b2c3d4e5f6... (HEAD -&gt; main)</span>
+<span class="out">Author: María González &lt;mgonzalez@duocuc.cl&gt;</span>
+<span class="out">Date:   Mon Jun 23 10:14:02 2026</span>
+<span class="out">                                                         </span>
+<span class="out">    Agrega README inicial</span>
+</TerminalBlock>
+
+Cada commit tiene un **hash** único (`a1b2c3d4...`). Puedes referirte a un commit con sus
+primeros 7 caracteres.
+
+## Ejemplo: tu primer commit completo
+
+<TerminalBlock>
+<span class="prompt">$</span> mkdir mi-app && cd mi-app
+<span class="prompt">$</span> git init
+<span class="prompt">$</span> echo "console.log('hola')" &gt; app.js
+<span class="prompt">$</span> git status                              <span class="comment"># app.js está untracked</span>
+<span class="prompt">$</span> git add app.js                           <span class="comment"># lo movemos al staging</span>
+<span class="prompt">$</span> git commit -m "Agrega script inicial"    <span class="comment"># queda en la historia</span>
+<span class="prompt">$</span> git log                                  <span class="comment"># vemos el commit creado</span>
+</TerminalBlock>
+
+## Caso de uso real
+
+Eres el integrante del grupo encargado de partir el proyecto del Taller de Programación.
+Antes de subirlo a la nube, lo vuelves repositorio Git en tu máquina:
+
+1. `git init` en la carpeta del proyecto.
+2. `git status` para ver qué archivos hay.
+3. `git add .` para preparar todo.
+4. `git commit -m "Estructura inicial del proyecto"` para fijar el punto de partida.
+
+A partir de aquí, **cualquier desastre futuro tiene cómo volverse atrás**. La unidad
+siguiente te enseña a navegar esa historia.

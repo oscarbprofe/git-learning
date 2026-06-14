@@ -1,0 +1,99 @@
+{
+  "unit": "u1",
+  "exercises": [
+    {
+      "id": "u1-e1",
+      "prompt": "Configura globalmente tu nombre como autor para Git.",
+      "scenario": "Tu nombre completo es Ana Soto. Escribe el comando que registra ese nombre como autor en TODOS los repositorios de tu equipo (configuración global).",
+      "accept": ["^git config --global user\\.name \"Ana Soto\"$"],
+      "hint": "Recuerda usar comillas alrededor del nombre porque contiene espacios.",
+      "expectedHint": "git config --global user.name \"Ana Soto\"",
+      "value": 2
+    },
+    {
+      "id": "u1-e2",
+      "prompt": "Verifica la versión de Git instalada.",
+      "scenario": "Acabas de instalar Git y quieres confirmar que quedó disponible en la terminal. ¿Qué comando ejecutas?",
+      "accept": ["^git --version$", "^git version$"],
+      "hint": "Casi todos los programas de terminal aceptan `--version`.",
+      "expectedHint": "git --version",
+      "value": 2
+    },
+    {
+      "id": "u1-e3",
+      "prompt": "Abre la ayuda incorporada del comando `config`.",
+      "scenario": "Quieres consultar el manual completo del comando `git config`. Escribe el comando equivalente más explícito que abre esa ayuda.",
+      "accept": ["^git help config$", "^git config --help$"],
+      "hint": "Hay dos formas válidas: `git help <cmd>` o `git <cmd> --help`.",
+      "expectedHint": "git help config",
+      "value": 1
+    }
+  ],
+  "quiz": [
+    {
+      "id": "u1-q1",
+      "prompt": "¿Cuál es la diferencia central entre un sistema de control de versiones centralizado y uno distribuido?",
+      "options": [
+        { "key": "a", "label": "Los centralizados son más rápidos." },
+        { "key": "b", "label": "En los distribuidos, cada copia local guarda la historia completa del proyecto." },
+        { "key": "c", "label": "Los distribuidos sólo funcionan en Linux." },
+        { "key": "d", "label": "Los distribuidos son una tecnología más antigua." }
+      ],
+      "correct": "b",
+      "explanation": "En los sistemas distribuidos (como Git) cada clon contiene la historia completa, por eso puedes trabajar offline y luego sincronizar.",
+      "value": 1
+    },
+    {
+      "id": "u1-q2",
+      "prompt": "¿En qué año y por quién fue creado Git?",
+      "options": [
+        { "key": "a", "label": "1995, por Richard Stallman" },
+        { "key": "b", "label": "2010, por la Apache Software Foundation" },
+        { "key": "c", "label": "2005, por Linus Torvalds" },
+        { "key": "d", "label": "2000, por Sun Microsystems" }
+      ],
+      "correct": "c",
+      "explanation": "Git fue creado en 2005 por Linus Torvalds, el mismo creador del kernel Linux.",
+      "value": 1
+    },
+    {
+      "id": "u1-q3",
+      "prompt": "El comando `git config --global user.email \"x@duocuc.cl\"` afecta a…",
+      "options": [
+        { "key": "a", "label": "Sólo a la carpeta actual." },
+        { "key": "b", "label": "Todos los proyectos Git que uses en este equipo." },
+        { "key": "c", "label": "Sólo a los próximos proyectos que crees." },
+        { "key": "d", "label": "Sólo a los cambios que hagas hoy." }
+      ],
+      "correct": "b",
+      "explanation": "`--global` aplica la configuración a todos los proyectos Git del usuario en ese equipo. Para limitar a un proyecto, se usa `--local` dentro de su carpeta.",
+      "value": 1
+    },
+    {
+      "id": "u1-q4",
+      "prompt": "¿Por qué Git pide que configures tu nombre y correo?",
+      "options": [
+        { "key": "a", "label": "Para enviar telemetría a Git." },
+        { "key": "b", "label": "Para identificar al autor de cada cambio que registres." },
+        { "key": "c", "label": "Para autenticarte contra un servidor en internet." },
+        { "key": "d", "label": "Para encriptar tu proyecto." }
+      ],
+      "correct": "b",
+      "explanation": "Cada cambio registrado lleva el nombre y correo del autor; por eso es importante usar tu identidad real (institucional, en este curso).",
+      "value": 2
+    },
+    {
+      "id": "u1-q5",
+      "prompt": "Tienes dudas sobre el comando `git log`. ¿Cuál de estas formas NO te muestra ayuda de Git?",
+      "options": [
+        { "key": "a", "label": "git help log" },
+        { "key": "b", "label": "git log --help" },
+        { "key": "c", "label": "git log -h" },
+        { "key": "d", "label": "git ?? log" }
+      ],
+      "correct": "d",
+      "explanation": "Las tres primeras son válidas. `git ?? log` no existe.",
+      "value": 3
+    }
+  ]
+}
