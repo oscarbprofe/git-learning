@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import VerifyReport from '../components/islands/VerifyReport.tsx';
+---
+
+<BaseLayout
+  title="Verificar informe — Git Challenge"
+  description="Herramienta para docentes Duoc UC: verificar el código de un informe PDF de Git Challenge."
+>
+  <div class="container verificar-container">
+    <VerifyReport client:load />
+  </div>
+</BaseLayout>
+
+<style>
+  .verificar-container {
+    padding: var(--sp-8) var(--sp-5);
+    max-width: var(--content-width);
+  }
+</style>

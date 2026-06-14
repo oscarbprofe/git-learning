@@ -49,15 +49,26 @@ Para probar el flujo real de autenticación y persistencia en la nube:
 
 1. **Crea un proyecto** en [Firebase Console](https://console.firebase.google.com).
 2. **Authentication** → habilita el proveedor **Google**.
-3. **Firestore Database** → crea la base en modo producción (región `us-central1` o cercana) y publica estas reglas (cada estudiante solo accede a su propio documento):
+3. **Firestore Database** → crea la base en modo producción (región `us-central1` o cercana) y publica estas reglas. Cada estudiante solo accede a su propio documento; el personal docente/funcionario puede leer (no escribir) para la verificación de informes:
    ```
    rules_version = '2';
    service cloud.firestore {
      match /databases/{database}/documents {
+       function isVerified() {
+         return request.auth != null && request.auth.token.email_verified == true;
+       }
+       function isOwner(email) {
+         return isVerified() && request.auth.token.email == email;
+       }
+       function isStaff() {
+         return isVerified() && (
+           request.auth.token.email.matches('^[^@]+@profesor[.]duoc[.]cl$') ||
+           request.auth.token.email.matches('^[^@]+@duoc[.]cl$')
+         );
+       }
        match /students/{email} {
-         allow read, write: if request.auth != null
-                            && request.auth.token.email == email
-                            && request.auth.token.email_verified == true;
+         allow read:  if isOwner(email) || isStaff();
+         allow write: if isOwner(email);
        }
      }
    }
@@ -137,6 +148,18 @@ Las unidades son archivos de contenido versionados, sin tocar código:
 - Puntaje total del curso: **0–100** (repartido entre las 8 unidades, ~50 % ejercicios / ~50 % quiz).
 - Una unidad se completa al **responder todos sus ejercicios y todas las preguntas del quiz** (la teoría y los ejemplos son lectura libre).
 - Conversión a nota chilena con exigencia 60 %: `0 → 1.0 · 60 → 4.0 · 100 → 7.0`. Todo ítem no respondido vale 0, por lo que la nota refleja exactamente lo avanzado.
+
+## Verificación de informes (`/verificar`)
+
+Cada informe PDF incluye un **código de verificación** en el pie. La página **`/verificar`** permite a un **docente o funcionario** (cuenta `@profesor.duoc.cl` o `@duoc.cl`) confirmar la autenticidad de un informe:
+
+1. El docente inicia sesión con su cuenta institucional Duoc UC.
+2. Ingresa el **correo del estudiante** y el **código de verificación** del PDF.
+3. La página confirma si ese código corresponde a un informe realmente exportado por esa cuenta, mostrando nombre, correo, porcentaje de avance y fecha de exportación.
+
+El acceso está restringido a personal docente/funcionario; un estudiante no puede usar esta herramienta. Cada exportación queda registrada en Firestore (`students/<email>`), por lo que se pueden verificar informes emitidos en distintos momentos del viaje.
+
+> Requiere las reglas de Firestore que habilitan la lectura por parte del personal docente (ver más abajo).
 
 ## Despliegue
 

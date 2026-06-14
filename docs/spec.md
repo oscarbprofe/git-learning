@@ -174,8 +174,8 @@ Colección `students`, un documento por estudiante con ID = correo institucional
 - **Escritura inmediata** en cada respuesta (sin botón "guardar"), con **actualización optimista**: la UI refleja el cambio al instante y luego se confirma la escritura en Firestore.
 - **Feedback de guardado** en el header: indicador "Guardando… / Guardado / Sin guardar — revisa tu conexión".
 - **Manejo de error de carga**: si Firestore es inaccesible al iniciar, se muestra un mensaje con botón "Reintentar" y **no** se crea un estado vacío (evita sobrescribir datos existentes).
-- **Reglas de seguridad de Firestore**: cada estudiante solo puede leer/escribir su propio documento (`request.auth.token.email == <docId>` y `email_verified == true`).
-- **Sello de verificación del PDF**: SHA-256 (Web Crypto) del avance + sal fija. Se calcula **al exportar** (excluyendo los campos de auditoría para que dependa solo del avance) y se imprime truncado en el pie del informe. Al exportar se **persiste** en el campo `lastReport` del documento (`hash`, `at`, `pct`) mediante `setDoc(..., { merge: true })`, de modo que el código impreso pueda **contrastarse contra la nube**. Es evidencia **disuasiva, no infalible**: la sal es pública, por lo que para verificación criptográfica fuerte habría que calcular el sello en un entorno con secreto (fuera de alcance v1).
+- **Reglas de seguridad de Firestore**: cada estudiante solo lee/escribe su propio documento; el personal docente/funcionario (`@profesor.duoc.cl`, `@duoc.cl`) puede **leer** (no escribir) para la verificación de informes.
+- **Sello de verificación del PDF**: sello SHA-256 (Web Crypto) del avance. Se calcula al exportar, se imprime truncado en el pie del informe y se **registra en Firestore** (`lastReport` + historial `reports[]`) para poder contrastar el código entregado con la página `/verificar`.
 - Botón "Reiniciar mi avance" con doble confirmación (borra solo el documento del usuario actual).
 
 ## 9. Indicador de progreso

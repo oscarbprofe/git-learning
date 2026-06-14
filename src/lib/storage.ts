@@ -38,6 +38,8 @@ export interface ProgressState {
   units: Record<string, UnitProgress>;
   /** Última exportación de informe PDF; campo de auditoría, no afecta el hash. */
   lastReport?: ReportRecord;
+  /** Historial de informes exportados, para verificar cualquier PDF emitido. */
+  reports?: ReportRecord[];
 }
 
 const SCHEMA_VERSION = 1;
@@ -230,7 +232,7 @@ export async function computeIntegrity(state: ProgressState): Promise<string> {
 }
 
 /** Persiste en Firestore el sello de la última exportación de informe (auditoría).
- * Permite contrastar después el código del PDF contra lo guardado en la nube. */
+ * Guarda el último informe y lo agrega al historial, para verificar cualquier PDF. */
 export async function recordReport(email: string, record: ReportRecord): Promise<void> {
   if (typeof window === 'undefined') return;
 
@@ -239,6 +241,7 @@ export async function recordReport(email: string, record: ReportRecord): Promise
     const existing = loadLocal(email);
     if (existing) {
       existing.lastReport = record;
+      existing.reports = [...(existing.reports ?? []), record];
       window.localStorage.setItem(localKey(email), JSON.stringify(existing));
     }
     return;
@@ -246,5 +249,34 @@ export async function recordReport(email: string, record: ReportRecord): Promise
 
   const { db, fs } = await getFirestore();
   const ref = fs.doc(db, docPath(email));
-  await fs.setDoc(ref, { lastReport: record }, { merge: true });
+  await fs.setDoc(
+    ref,
+    { lastReport: record, reports: fs.arrayUnion(record) },
+    { merge: true },
+  );
+}
+
+/** Lee la info de informes de un estudiante (para la página de verificación, staff). */
+export async function fetchStudentReport(
+  email: string,
+): Promise<{ name: string; email: string; reports: ReportRecord[]; lastReport?: ReportRecord } | null> {
+  if (typeof window === 'undefined') return null;
+  const normalized = email.trim().toLowerCase();
+
+  const pack = (d: ProgressState) => ({
+    name: d.student?.name ?? normalized,
+    email: d.student?.email ?? normalized,
+    reports: d.reports ?? (d.lastReport ? [d.lastReport] : []),
+    lastReport: d.lastReport,
+  });
+
+  if (!isFirebaseConfigured()) {
+    const local = loadLocal(normalized);
+    return local ? pack(local) : null;
+  }
+
+  const { db, fs } = await getFirestore();
+  const snap = await fs.getDoc(fs.doc(db, docPath(normalized)));
+  if (!snap.exists()) return null;
+  return pack(snap.data() as ProgressState);
 }

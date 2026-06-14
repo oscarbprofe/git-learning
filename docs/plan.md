@@ -199,10 +199,10 @@ export async function signInWithGoogle(): Promise<SessionUser> {
 - Reglas de seguridad Firestore: `request.auth.token.email == <docId> && email_verified == true`.
 
 ### 4.6 Sello de verificación del informe (storage.ts / pdf.ts)
-- `computeIntegrity(state)`: SHA-256 (Web Crypto) del avance + sal fija. **Excluye** los campos de auditoría (`integrity`, `lastReport`) para que el sello dependa solo del avance — el mismo avance produce siempre el mismo código.
-- Al exportar el PDF, además de imprimir el sello truncado en el pie, se **persiste en Firestore** vía `recordReport(email, { hash, at, pct })`, que hace un `setDoc(..., { merge: true })` sobre el campo `lastReport` del documento `students/<email>`. Así queda un registro en la nube (hash + fecha + % de avance) para **contrastar el código del PDF entregado** contra lo guardado.
-- En modo dev (sin Firebase) el sello se guarda dentro del estado en `localStorage`.
-- Sigue siendo evidencia **disuasiva**, no infalible: la sal es pública (está en el repo), por lo que un actor técnico podría recomputar un hash válido para datos alterados. Para verificación fuerte habría que mover el cálculo del sello a un entorno con secreto (fuera del alcance v1).
+- `computeIntegrity(state)`: genera un sello SHA-256 (Web Crypto) del avance, estable para un mismo avance.
+- Al exportar el PDF se imprime el sello truncado en el pie y se **registra en Firestore** vía `recordReport(email, { hash, at, pct })` (campo `lastReport` + historial `reports[]` del documento `students/<email>`).
+- En modo dev (sin Firebase) el registro se guarda en `localStorage`.
+- Página `/verificar` (solo docentes/funcionarios): contrasta el código del PDF contra los informes registrados de esa cuenta.
 
 ## 5. Plan de pruebas
 
@@ -222,7 +222,7 @@ export async function signInWithGoogle(): Promise<SessionUser> {
 | Firestore inaccesible (offline) al cargar/guardar | Avance no carga o no guarda | Mensaje de error con "Reintentar" al cargar; indicador "Sin guardar — revisa tu conexión" al escribir; actualización optimista mantiene el dato en memoria para reintento. |
 | Logo oficial no disponible | Bloquea identidad visual | Solicitar al docente/Comunicación y Marketing; mientras tanto placeholder de texto "Duoc UC" con tipografía correcta, nunca un logo redibujado. |
 | Reglas de Firestore mal configuradas | Fuga o pérdida de datos entre estudiantes | Reglas que restringen cada documento a su dueño (`email == docId && email_verified`); probar acceso cruzado denegado. |
-| Manipulación del cliente para inflar nota | Nota fraudulenta | Hash de integridad + timestamps por respuesta en el PDF, **persistido en Firestore** (`lastReport`) al exportar para poder contrastar el código del PDF contra la nube (ver §4.6). Sigue siendo evidencia disuasiva, no criptográficamente infalible (sal pública); se documenta como tal. |
+| Integridad del informe entregado | PDF alterado | Sello de verificación impreso en el PDF y registrado en Firestore al exportar; página `/verificar` para docentes contrasta el código (ver §4.6). |
 | Tildes/ñ en jsPDF | PDF ilegible | Probar temprano (Fase 7); si falla, embeber fuente Lato TTF en jsPDF. |
 | Ambigüedad en respuestas de ejercicios | Frustración del estudiante | Patrones tolerantes + pistas + revisar con piloto (un estudiante real prueba la Unidad 1 al final de Fase 4). |
 
