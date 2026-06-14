@@ -45,7 +45,6 @@ export default function ExerciseCard(props: Props) {
   }, [stored?.answer]);
 
   const closed = Boolean(stored?.correct) || attempts >= ATTEMPT_FACTORS.length;
-  const remainingAttempts = ATTEMPT_FACTORS.length - attempts;
 
   async function handleCheck(e: Event) {
     e.preventDefault();
