@@ -24,7 +24,7 @@ principiantes. Esta es tu tabla de decisión:
 | Guardar cambios pendientes para después | `git stash` |
 
 <Callout type="info" title="Un concepto que se profundiza más adelante">
-En esta unidad mencionaremos algo que verás formalmente en la Unidad 6: en algún momento
+En esta unidad mencionaremos algo qué verás formalmente en la Unidad 6: en algún momento
 querrás **compartir tu historia con un servidor remoto** para que tu equipo la vea. Una
 vez que pasa eso, algunas formas de "deshacer" se vuelven peligrosas porque desincronizan
 al equipo. Para esos casos existe `revert`. Hasta entonces, mientras la historia viva
@@ -106,6 +106,30 @@ limpio:
 <span class="prompt">$</span> git stash pop              <span class="comment"># recuperar el último y borrarlo</span>
 <span class="prompt">$</span> git stash apply            <span class="comment"># recuperar sin borrarlo</span>
 </TerminalBlock>
+
+### Ponerle un mensaje al stash
+
+Si vas a guardar varios stashes, conviene describirlos para no perderte. Usa `push -m`:
+
+<TerminalBlock>
+<span class="prompt">$</span> git stash push -m "formulario de login a medias"
+<span class="prompt">$</span> git stash list
+<span class="out">stash@{0}: On main: formulario de login a medias</span>
+<span class="out">stash@{1}: WIP on main: a1b2c3d Agrega header</span>
+</TerminalBlock>
+
+<Callout type="info" title="Es un mensaje, no un nombre">
+Aunque le pongas un mensaje, **sigues recuperando el stash por su índice**, no por el
+texto. Cada stash se identifica como `stash@{0}` (el más reciente), `stash@{1}`, etc.
+
+<TerminalBlock>
+<span class="prompt">$</span> git stash apply stash@{1}   <span class="comment"># aplica un stash específico</span>
+<span class="prompt">$</span> git stash pop stash@{0}     <span class="comment"># aplica y borra ese</span>
+</TerminalBlock>
+
+El mensaje es solo para que **tú** reconozcas cuál es cuál en `git stash list`. No existe
+algo como `git stash pop "formulario de login"`.
+</Callout>
 
 ## Comparación rápida: reset vs revert
 
