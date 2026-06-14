@@ -1,8 +1,6 @@
-/** Autenticación Firebase Email Link con allowlist institucional Duoc UC.
+/** Autenticación Firebase Google OAuth con allowlist institucional Duoc UC.
  *
  * Modo dev (PUBLIC_AUTH_DISABLED=true): salta Firebase y autentica como dev@duocuc.cl.
- * Producción: importa Firebase de forma dinámica al primer uso (no entra en el bundle
- * inicial del cliente cuando AUTH_DISABLED está activo).
  */
 
 import { isInstitutionalEmail, ALLOWED_DOMAINS_LABEL } from './domains';
@@ -12,25 +10,20 @@ export interface SessionUser {
   email: string;
 }
 
-const PENDING_EMAIL_KEY = 'gc:pendingEmail';
-const PENDING_NAME_KEY = 'gc:pendingName';
-
 const env = (key: string): string | undefined =>
   (import.meta.env as Record<string, string | undefined>)[key];
 
 const AUTH_DISABLED = env('PUBLIC_AUTH_DISABLED') === 'true';
 
-const DEV_USER_FALLBACK: SessionUser = { name: 'Estudiante Demo', email: 'demo@duocuc.cl' };
 const DEV_SESSION_KEY = 'gc:devSession';
 
-/* ---------- Lazy Firebase (sólo en producción) ---------- */
+/* ---------- Lazy Firebase ---------- */
 
 type FirebaseAuthModule = typeof import('firebase/auth');
 type FirebaseAppModule = typeof import('firebase/app');
 
 interface FirebaseBundle {
   app: FirebaseAuthModule;
-  appCore: FirebaseAppModule;
   auth: ReturnType<FirebaseAuthModule['getAuth']>;
 }
 
@@ -54,19 +47,19 @@ async function getFirebase(): Promise<FirebaseBundle> {
   }
 
   const [appCore, auth] = await Promise.all([
-    import('firebase/app'),
-    import('firebase/auth'),
+    import('firebase/app') as Promise<FirebaseAppModule>,
+    import('firebase/auth') as Promise<FirebaseAuthModule>,
   ]);
 
   const fbApp = appCore.initializeApp({ apiKey, authDomain, projectId, appId });
   const fbAuth = auth.getAuth(fbApp);
   await auth.setPersistence(fbAuth, auth.browserLocalPersistence).catch(() => {});
 
-  _firebase = { app: auth, appCore, auth: fbAuth };
+  _firebase = { app: auth, auth: fbAuth };
   return _firebase;
 }
 
-/* ---------- Helpers comunes ---------- */
+/* ---------- Helpers ---------- */
 
 function userFromFirebase(u: { email: string | null; displayName: string | null } | null): SessionUser | null {
   if (!u || !u.email) return null;
@@ -84,16 +77,10 @@ export function getCurrentUser(): SessionUser | null {
   if (AUTH_DISABLED) {
     const raw = window.sessionStorage.getItem(DEV_SESSION_KEY);
     if (raw) {
-      try {
-        return JSON.parse(raw) as SessionUser;
-      } catch {
-        return null;
-      }
+      try { return JSON.parse(raw) as SessionUser; } catch { return null; }
     }
     return null;
   }
-  // En producción no podemos resolverlo sincrónicamente — devolvemos null y el
-  // caller debe escuchar onAuthChange.
   return null;
 }
 
@@ -111,7 +98,6 @@ export function onAuthChange(cb: (user: SessionUser | null) => void): () => void
     };
   }
 
-  // Firebase real (lazy)
   let unsubscribe: (() => void) | null = null;
   let cancelled = false;
   void getFirebase()
@@ -127,67 +113,29 @@ export function onAuthChange(cb: (user: SessionUser | null) => void): () => void
   };
 }
 
-export async function sendLoginLink(name: string, email: string): Promise<void> {
-  if (!name.trim()) throw new Error('NOMBRE_REQUERIDO');
-  if (!isInstitutionalEmail(email)) throw new Error('DOMINIO_INVALIDO');
-
-  const normalizedEmail = email.trim().toLowerCase();
-  const normalizedName = name.trim();
-
+export async function signInWithGoogle(): Promise<SessionUser> {
   if (AUTH_DISABLED) {
-    const session: SessionUser = { name: normalizedName, email: normalizedEmail };
+    const email = 'dev@duocuc.cl';
+    const session: SessionUser = { name: 'Estudiante Demo', email };
     window.sessionStorage.setItem(DEV_SESSION_KEY, JSON.stringify(session));
     window.dispatchEvent(new Event('gc:devauth'));
-    return;
+    return session;
   }
 
   const { app, auth } = await getFirebase();
-  window.localStorage.setItem(PENDING_EMAIL_KEY, normalizedEmail);
-  window.localStorage.setItem(PENDING_NAME_KEY, normalizedName);
+  const { GoogleAuthProvider, signInWithPopup } = app;
 
-  await app.sendSignInLinkToEmail(auth, normalizedEmail, {
-    url: window.location.origin + '/',
-    handleCodeInApp: true,
-  });
-}
+  const provider = new GoogleAuthProvider();
 
-export async function completeLoginIfLink(): Promise<SessionUser | null> {
-  if (typeof window === 'undefined' || AUTH_DISABLED) return null;
-
-  const { app, auth } = await getFirebase();
-  if (!app.isSignInWithEmailLink(auth, window.location.href)) return null;
-
-  let email = window.localStorage.getItem(PENDING_EMAIL_KEY);
-  if (!email) {
-    email = window.prompt('Confirma tu correo institucional Duoc UC para completar el ingreso');
-    if (!email) return null;
-  }
+  const cred = await signInWithPopup(auth, provider);
+  const email = cred.user.email ?? '';
 
   if (!isInstitutionalEmail(email)) {
+    await app.signOut(auth);
     throw new Error(`DOMINIO_INVALIDO: solo ${ALLOWED_DOMAINS_LABEL}`);
   }
 
-  const cred = await app.signInWithEmailLink(auth, email, window.location.href);
-  if (!cred.user.email || !isInstitutionalEmail(cred.user.email)) {
-    await app.signOut(auth);
-    throw new Error('DOMINIO_INVALIDO');
-  }
-
-  const pendingName = window.localStorage.getItem(PENDING_NAME_KEY);
-  if (pendingName && !cred.user.displayName) {
-    await app.updateProfile(cred.user, { displayName: pendingName });
-  }
-
-  window.localStorage.removeItem(PENDING_EMAIL_KEY);
-  window.localStorage.removeItem(PENDING_NAME_KEY);
-
-  try {
-    window.history.replaceState({}, document.title, window.location.pathname);
-  } catch {
-    /* noop */
-  }
-
-  return userFromFirebase(cred.user);
+  return userFromFirebase(cred.user)!;
 }
 
 export async function signOut(): Promise<void> {
@@ -200,7 +148,3 @@ export async function signOut(): Promise<void> {
   const { app, auth } = await getFirebase();
   await app.signOut(auth);
 }
-
-// Suprime el warning de variable no usada (lo dejamos disponible si en el futuro
-// queremos mostrar un fallback de usuario por defecto).
-void DEV_USER_FALLBACK;
