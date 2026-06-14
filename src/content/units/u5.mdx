@@ -12,8 +12,20 @@ import Callout from '../../components/astro/Callout.astro';
 ## ¿Qué es una rama?
 
 Una **rama** (branch) es una línea de desarrollo independiente. Te permite trabajar en
-una nueva feature, un experimento o un bugfix **sin afectar la versión estable** de tu
+una nueva *feature*, un experimento o un *bugfix* **sin afectar la versión estable** de tu
 proyecto.
+
+<Callout type="info" title="Vocabulario: feature y bugfix">
+Verás estos términos del inglés a lo largo del curso (son los que se usan en la industria):
+
+- **Feature** = una **funcionalidad** o característica nueva del proyecto (ej.: el login, el
+  modo oscuro, un formulario).
+- **Bugfix** = la **corrección de un error** (un *bug*).
+
+Por convención, las ramas se nombran según para qué son: `feature/login`,
+`feature/dark-mode`, `bugfix/correo-vacio`. La barra `/` es solo parte del nombre y ayuda a
+agrupar; no crea carpetas.
+</Callout>
 
 Cuando ejecutas `git init`, Git crea una rama por defecto llamada `main` (antes `master`).
 Todos tus commits van a esa rama hasta que decidas crear otra.

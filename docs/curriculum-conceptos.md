@@ -77,6 +77,7 @@ Al final está la **auditoría** con los desfases detectados y su resolución.
 | 4 | `git pull origin <rama>` evaluado en `u7-e3`; U6 solo mostraba `git pull` a secas. | Baja | ✅ Resuelto: U6 incluye la forma explícita `git pull origin <rama>`. |
 | 5 | Aceptación tolerante de `git checkout -- <archivo>` (`u4-e1`) y `git reset HEAD <archivo>` (`u4-e2`), formas no enseñadas aún. | Baja | Aceptado como **tolerancia opcional**: el comando pedido y la pista usan la forma enseñada (`restore`/`restore --staged`); estas variantes solo suman si el estudiante ya las conoce. No se exige ni se sugiere lo no enseñado. |
 | 6 | Términos mencionados al pasar como distractores o paréntesis: `git merge --abort` (distractor en `u5-q3`), CI, WIP, `--force-with-lease`. | Informativa | Aceptado: aparecen como opción incorrecta o aclaración entre paréntesis, no requieren conocimiento previo para responder. |
+| 7 | "feature" y "bugfix" usados desde U5 (definición de rama y nombres `feature/login`) sin glosa, asumiendo el anglicismo conocido. | Media | ✅ Resuelto: callout "Vocabulario: feature y bugfix" en U5, con la convención de nombres de rama. |
 
 > **Bug de contenido corregido de paso:** en `u6-e4` el escenario tenía `pushea**ron**`
 > (asteriscos de Markdown que se renderizaban como texto plano); se corrigió la redacción.
