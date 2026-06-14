@@ -17,16 +17,24 @@ Una **rama** (branch) es una línea de desarrollo independiente. Te permite trab
 una nueva *feature*, un experimento o un *bugfix* **sin afectar la versión estable** de tu
 proyecto.
 
-<Callout type="info" title="Vocabulario: feature y bugfix">
+<Callout type="info" title="Vocabulario: tipos de cambio y nombres de rama">
 Verás estos términos del inglés a lo largo del curso (son los que se usan en la industria):
 
-- **Feature** = una **funcionalidad** o característica nueva del proyecto (ej.: el login, el
-  modo oscuro, un formulario).
-- **Bugfix** = la **corrección de un error** (un *bug*).
+- **Feature** = una **funcionalidad** o característica nueva (ej.: el login, el modo oscuro).
+- **Bugfix** = la **corrección de un error** (un *bug*) durante el trabajo normal.
+- **Hotfix** = una **corrección urgente** sobre la versión que ya está en producción (la que
+  usan los usuarios) y que no puede esperar al ciclo normal.
 
-Por convención, las ramas se nombran según para qué son: `feature/login`,
-`feature/dark-mode`, `bugfix/correo-vacio`. La barra `/` es solo parte del nombre y ayuda a
-agrupar; no crea carpetas.
+Por convención, las ramas se nombran con un **prefijo** según para qué son, seguido de `/` y
+una descripción corta:
+
+- `feature/login`, `feature/dark-mode`
+- `bugfix/correo-vacio`
+- `hotfix/caida-pagos`
+
+La barra `/` es solo parte del nombre y ayuda a agrupar; **no crea carpetas**. No es
+obligatoria —es una convención de equipo, no una regla de Git—, pero hace la lista de ramas
+mucho más legible.
 </Callout>
 
 Cuando ejecutas `git init`, Git crea una rama por defecto llamada `main` (antes `master`).

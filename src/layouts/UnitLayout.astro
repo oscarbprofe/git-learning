@@ -2,6 +2,7 @@
 import BaseLayout from './BaseLayout.astro';
 import UnitProgressIsland from '../components/islands/UnitProgressIsland.tsx';
 import UnitNav from '../components/islands/UnitNav.tsx';
+import ScrollToTop from '../components/astro/ScrollToTop.astro';
 
 interface Props {
   unit: {
@@ -36,6 +37,7 @@ const { unit } = Astro.props;
 
     <UnitNav unitSlug={unit.slug} order={unit.order} client:load />
   </div>
+  <ScrollToTop />
 </BaseLayout>
 
 <style>

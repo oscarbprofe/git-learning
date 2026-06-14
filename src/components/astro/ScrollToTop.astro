@@ -1,0 +1,72 @@
+---
+/** Botón flotante "volver arriba". Aparece al hacer scroll y sube suavemente. */
+---
+<button id="scroll-top" class="scroll-top" type="button" aria-label="Volver arriba" hidden>
+  <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+    <path d="M12 5l-7 7 1.4 1.4L11 8.8V19h2V8.8l4.6 4.6L19 12z" fill="currentColor"></path>
+  </svg>
+</button>
+
+<style>
+  .scroll-top {
+    position: fixed;
+    right: var(--sp-5);
+    bottom: var(--sp-5);
+    z-index: 60;
+    width: 46px;
+    height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 50%;
+    background: var(--duoc-amarillo);
+    color: var(--duoc-negro);
+    box-shadow: var(--shadow-md);
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity var(--transition-base), transform var(--transition-base), background var(--transition-fast);
+  }
+  .scroll-top.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .scroll-top:hover {
+    background: var(--duoc-amarillo-oscuro);
+  }
+  .scroll-top:focus-visible {
+    outline: 3px solid var(--duoc-azul-escuela);
+    outline-offset: 2px;
+  }
+  @media (max-width: 640px) {
+    .scroll-top {
+      right: var(--sp-4);
+      bottom: var(--sp-4);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .scroll-top {
+      transition: opacity var(--transition-base);
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  const btn = document.getElementById('scroll-top');
+  if (btn) {
+    const THRESHOLD = 400;
+    const toggle = () => {
+      const show = window.scrollY > THRESHOLD;
+      btn.hidden = !show;
+      btn.classList.toggle('is-visible', show);
+    };
+    toggle();
+    window.addEventListener('scroll', toggle, { passive: true });
+    btn.addEventListener('click', () => {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+    });
+  }
+</script>
