@@ -65,6 +65,8 @@
   /* Layout */
   --container-max: 72rem;
   --content-max: 48rem;
+  /* Ancho del contenido centrado de las páginas; la barra del header se alinea a este. */
+  --content-width: 60rem;
 
   --radius-sm: 4px;
   --radius-md: 8px;
