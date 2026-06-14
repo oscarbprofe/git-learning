@@ -29,6 +29,7 @@ export default function SummaryView({ catalog }: Props) {
   const state = useStore($state);
 
   const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
 
   if (!authChecked) return <p class="loading">Cargando…</p>;
   if (!user) return <LoginCard />;
@@ -50,6 +51,7 @@ export default function SummaryView({ catalog }: Props) {
   async function handleExport() {
     if (!state) return;
     setExporting(true);
+    setExportError(null);
     try {
       const { exportReport } = await import('../../lib/pdf');
       const integrityHash = await computeIntegrity(state);
@@ -62,6 +64,10 @@ export default function SummaryView({ catalog }: Props) {
         totalMax,
         integrityHash,
       });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error('[git-challenge] Error al generar el PDF:', err);
+      setExportError(`No se pudo generar el PDF: ${msg}`);
     } finally {
       setExporting(false);
     }
@@ -161,6 +167,10 @@ export default function SummaryView({ catalog }: Props) {
         </button>
       </section>
 
+      {exportError && (
+        <div class="export-error" role="alert">⚠ {exportError}</div>
+      )}
+
       <p class="footnote">
         El informe descargado se rotula como <strong>parcial</strong> mientras tu viaje no esté
         100% completo, e incluye el detalle de respuestas hasta el punto actual.
@@ -168,6 +178,11 @@ export default function SummaryView({ catalog }: Props) {
 
       <style>{`
         .summary { display: flex; flex-direction: column; gap: var(--sp-6); }
+        .export-error {
+          background: #ffebee; color: var(--color-error);
+          border: 1px solid #ef9a9a; border-radius: var(--radius-md);
+          padding: var(--sp-3) var(--sp-4); font-size: var(--fs-sm);
+        }
         .hero {
           display: grid;
           grid-template-columns: 1fr auto;

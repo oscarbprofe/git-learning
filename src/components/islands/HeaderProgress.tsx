@@ -25,10 +25,7 @@ export default function HeaderProgress() {
       </div>
 
       <a href="/resumen" class="btn btn-primary resumen-btn" aria-label="Ver resumen e informe">
-        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
-          <path fill="currentColor" d="M6 2h9l5 5v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1zm8 1.5V8h4.5L14 3.5zM8 12h8v1.6H8V12zm0 3.4h8V17H8v-1.6zM8 8.6h4v1.6H8V8.6z"/>
-        </svg>
-        <span class="resumen-text">Ver mi resumen e informe</span>
+        Ver mi resumen e informe
       </a>
 
       <style>{`
@@ -38,6 +35,9 @@ export default function HeaderProgress() {
           gap: var(--sp-3);
           width: 100%;
           max-width: 560px;
+          /* el header-shell es pointer-events:none; reactivamos los clics aquí
+             (el <astro-island> es display:contents y no recibe el override). */
+          pointer-events: auto;
         }
         .header-progress {
           flex: 1;
