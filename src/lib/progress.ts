@@ -14,21 +14,79 @@ export interface UnitMeta {
   points: number;
   exerciseCount: number;
   quizCount: number;
-  sections: string[]; // ej. ['conceptos', 'ejemplos', 'ejercicios', 'quiz']
 }
 
 export const $state = atom<ProgressState | null>(null);
 export const $unitsMeta = atom<UnitMeta[]>([]);
 
+/** Estado de la sincronización con Firestore, para feedback en la UI. */
+export type SaveStatus = 'idle' | 'saving' | 'saved' | 'error';
+export const $saveStatus = atom<SaveStatus>('idle');
+
+/** Mensaje de error de carga del avance (Firestore inaccesible). null = sin error. */
+export const $loadError = atom<string | null>(null);
+
 export async function initProgressForUser(user: SessionUser, units: UnitMeta[]): Promise<void> {
   $unitsMeta.set(units);
-  const st = await getOrCreateState(user);
-  $state.set(st);
+  $loadError.set(null);
+  try {
+    const st = await getOrCreateState(user);
+    // Reconcilia la compleción con los datos actuales (repara estados guardados
+    // antes de cambios en la lógica) y persiste si algo cambió.
+    if (reconcileCompletion(st, units)) {
+      await saveState(st);
+    }
+    $state.set(st);
+  } catch (err) {
+    // No pudimos leer/crear el avance en Firestore: NO seteamos un estado vacío
+    // (eso arriesgaría sobrescribir datos al guardar). Mostramos error y dejamos
+    // que el estudiante reintente recargando.
+    console.error('[git-challenge] No se pudo cargar el avance:', err);
+    $state.set(null);
+    $loadError.set(
+      'No pudimos cargar tu avance. Revisa tu conexión a internet y vuelve a cargar la página.',
+    );
+    throw err;
+  }
 }
 
-export function clearProgress(): void {
+/** Recalcula completedAt de cada unidad y del viaje según ejercicios + quiz.
+ * Devuelve true si modificó el estado. */
+function reconcileCompletion(state: ProgressState, units: UnitMeta[]): boolean {
+  let changed = false;
+  for (const meta of units) {
+    const u = state.units[meta.slug];
+    if (!u) continue;
+    const done =
+      Object.keys(u.exercises).length >= meta.exerciseCount &&
+      Object.keys(u.quiz).length >= meta.quizCount;
+    if (done && !u.completedAt) {
+      u.completedAt = new Date().toISOString();
+      changed = true;
+    } else if (!done && u.completedAt) {
+      u.completedAt = null;
+      changed = true;
+    }
+  }
+  const allDone = units.length > 0 && units.every((m) => state.units[m.slug]?.completedAt);
+  const journeyDone = allDone ? state.completedAt ?? new Date().toISOString() : null;
+  if (journeyDone !== state.completedAt) {
+    state.completedAt = journeyDone;
+    changed = true;
+  }
+  return changed;
+}
+
+/** Limpia SOLO el estado en memoria (al cerrar sesión / sin usuario).
+ * No toca los datos guardados en Firestore. */
+export function resetLocalState(): void {
+  $state.set(null);
+}
+
+/** Borra el progreso guardado del estudiante (acción explícita "Reiniciar"). */
+export async function clearProgress(): Promise<void> {
   const s = $state.get();
-  if (s) clearState(s.student.email);
+  if (s) await clearState(s.student.email);
   $state.set(null);
 }
 
@@ -37,20 +95,24 @@ async function commit(mutator: (state: ProgressState) => void): Promise<void> {
   if (!current) return;
   const next: ProgressState = JSON.parse(JSON.stringify(current));
   mutator(next);
-  await saveState(next);
+  // Actualización optimista: la UI refleja el cambio de inmediato…
   $state.set(next);
+  $saveStatus.set('saving');
+  try {
+    // …y luego confirmamos la escritura en Firestore.
+    await saveState(next);
+    $saveStatus.set('saved');
+    window.setTimeout(() => {
+      if ($saveStatus.get() === 'saved') $saveStatus.set('idle');
+    }, 2000);
+  } catch (err) {
+    console.error('[git-challenge] No se pudo guardar la respuesta:', err);
+    $saveStatus.set('error');
+    // El dato sigue en memoria; el próximo guardado exitoso lo persistirá.
+  }
 }
 
 /* ------- mutaciones ------- */
-
-export async function markSectionVisited(unitSlug: string, section: string): Promise<void> {
-  await commit((s) => {
-    const u = ensureUnit(s, unitSlug);
-    if (!u.sectionsVisited.includes(section)) u.sectionsVisited.push(section);
-    maybeCompleteUnit(s, unitSlug);
-    maybeCompleteJourney(s);
-  });
-}
 
 export async function recordExercise(args: {
   unitSlug: string;
@@ -107,11 +169,10 @@ function maybeCompleteUnit(state: ProgressState, unitSlug: string): void {
   const u = state.units[unitSlug];
   if (!u) return;
 
-  const allSections = meta.sections.every((s) => u.sectionsVisited.includes(s));
   const allExercises = Object.keys(u.exercises).length >= meta.exerciseCount;
   const allQuiz = Object.keys(u.quiz).length >= meta.quizCount;
 
-  if (allSections && allExercises && allQuiz && !u.completedAt) {
+  if (allExercises && allQuiz && !u.completedAt) {
     u.completedAt = new Date().toISOString();
   }
 }
@@ -150,7 +211,7 @@ export function summarizeUnit(state: ProgressState | null, meta: UnitMeta, prevD
   let status: UnitSummary['status'] = 'not-started';
   if (!unlocked) status = 'locked';
   else if (unit?.completedAt) status = 'completed';
-  else if (unit && (unit.sectionsVisited.length > 0 || Object.keys(unit.exercises).length || Object.keys(unit.quiz).length)) status = 'in-progress';
+  else if (unit && (Object.keys(unit.exercises).length || Object.keys(unit.quiz).length)) status = 'in-progress';
 
   return {
     meta,
@@ -189,15 +250,16 @@ export const $globalPercent = computed([$totalScore, $totalMax], (score, max) =>
 
 export const $isJourneyComplete = computed($state, (s) => Boolean(s?.completedAt));
 
-/** Progreso de actividades del viaje (secciones visitadas + ejercicios + quiz). */
+/** Progreso de actividades del viaje (ejercicios + quiz respondidos). */
 export const $activityProgress = computed([$state, $unitsMeta], (state, metas) => {
   let total = 0;
   let done = 0;
   for (const m of metas) {
-    total += m.sections.length + m.exerciseCount + m.quizCount;
+    total += m.exerciseCount + m.quizCount;
     const u = state?.units[m.slug];
     if (!u) continue;
-    done += u.sectionsVisited.length + Object.keys(u.exercises).length + Object.keys(u.quiz).length;
+    done += Math.min(Object.keys(u.exercises).length, m.exerciseCount);
+    done += Math.min(Object.keys(u.quiz).length, m.quizCount);
   }
   return { done, total, percent: total ? Math.round((done / total) * 100) : 0 };
 });

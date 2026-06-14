@@ -5,8 +5,6 @@
 
 import type { UnitMeta } from './progress';
 
-export const UNIT_SECTIONS = ['conceptos', 'ejemplos', 'ejercicios', 'quiz'] as const;
-
 export const UNITS_META: UnitMeta[] = [
   {
     slug: 'u1',
@@ -17,7 +15,6 @@ export const UNITS_META: UnitMeta[] = [
     points: 10,
     exerciseCount: 3,
     quizCount: 5,
-    sections: [...UNIT_SECTIONS],
   },
   {
     slug: 'u2',
@@ -27,7 +24,6 @@ export const UNITS_META: UnitMeta[] = [
     points: 12,
     exerciseCount: 4,
     quizCount: 5,
-    sections: [...UNIT_SECTIONS],
   },
   {
     slug: 'u3',
@@ -37,7 +33,6 @@ export const UNITS_META: UnitMeta[] = [
     points: 12,
     exerciseCount: 4,
     quizCount: 5,
-    sections: [...UNIT_SECTIONS],
   },
   {
     slug: 'u4',
@@ -47,7 +42,6 @@ export const UNITS_META: UnitMeta[] = [
     points: 14,
     exerciseCount: 4,
     quizCount: 6,
-    sections: [...UNIT_SECTIONS],
   },
   {
     slug: 'u5',
@@ -57,7 +51,6 @@ export const UNITS_META: UnitMeta[] = [
     points: 14,
     exerciseCount: 4,
     quizCount: 6,
-    sections: [...UNIT_SECTIONS],
   },
   {
     slug: 'u6',
@@ -67,7 +60,6 @@ export const UNITS_META: UnitMeta[] = [
     points: 13,
     exerciseCount: 4,
     quizCount: 5,
-    sections: [...UNIT_SECTIONS],
   },
   {
     slug: 'u7',
@@ -77,7 +69,6 @@ export const UNITS_META: UnitMeta[] = [
     points: 13,
     exerciseCount: 4,
     quizCount: 5,
-    sections: [...UNIT_SECTIONS],
   },
   {
     slug: 'u8',
@@ -87,7 +78,6 @@ export const UNITS_META: UnitMeta[] = [
     points: 12,
     exerciseCount: 4,
     quizCount: 5,
-    sections: [...UNIT_SECTIONS],
   },
 ];
 

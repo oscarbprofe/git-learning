@@ -33,7 +33,8 @@ export default function LoginCard() {
     <div class="login-card card">
       <h2>Inicia tu viaje</h2>
       <p class="subtitle">
-        Ingresa con tu cuenta institucional Duoc UC ({ALLOWED_DOMAINS_LABEL}).
+        Ingresa con tu cuenta institucional Duoc UC ({ALLOWED_DOMAINS_LABEL}). Tu avance se
+        guarda en tu cuenta y te sigue en cualquier dispositivo.
       </p>
 
       {isAuthDisabled() && (

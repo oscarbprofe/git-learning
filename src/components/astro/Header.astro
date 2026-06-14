@@ -2,6 +2,7 @@
 import DuocLogo from './DuocLogo.astro';
 import HeaderProgress from '../islands/HeaderProgress.tsx';
 import UserMenu from '../islands/UserMenu.tsx';
+import SaveStatus from '../islands/SaveStatus.tsx';
 ---
 
 <header class="site-header">
@@ -13,6 +14,8 @@ import UserMenu from '../islands/UserMenu.tsx';
     </a>
 
     <HeaderProgress client:load />
+
+    <SaveStatus client:load />
 
     <UserMenu client:load />
   </div>

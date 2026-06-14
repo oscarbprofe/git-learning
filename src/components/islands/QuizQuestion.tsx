@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'preact/hooks';
 import { useStore } from '@nanostores/preact';
-import { $state, recordQuiz, markSectionVisited } from '../../lib/progress';
+import { $state, recordQuiz } from '../../lib/progress';
 import { useInitializedProgress } from './useProgress';
 
 interface Option {
@@ -22,7 +22,7 @@ interface Props {
 
 export default function QuizQuestion(props: Props) {
   const { unitSlug, id, prompt, options, correct, explanation, value, index, total } = props;
-  const { user, ready } = useInitializedProgress();
+  const { user, ready, error } = useInitializedProgress();
   const state = useStore($state);
   const stored = state?.units[unitSlug]?.quiz[id];
 
@@ -30,8 +30,11 @@ export default function QuizQuestion(props: Props) {
   const [submitted, setSubmitted] = useState(Boolean(stored));
 
   useEffect(() => {
-    if (ready && user) void markSectionVisited(unitSlug, 'quiz');
-  }, [ready, user?.email, unitSlug]);
+    if (stored) {
+      setSelected(stored.selected);
+      setSubmitted(true);
+    }
+  }, [stored?.selected]);
 
   async function handleSubmit(e: Event) {
     e.preventDefault();
@@ -48,6 +51,18 @@ export default function QuizQuestion(props: Props) {
   }
 
   if (!user) return <div class="card">Inicia sesión para responder el quiz.</div>;
+  if (error) {
+    return (
+      <div class="card" style="background:#ffebee;color:#c62828;border:1px solid #ef9a9a;">
+        ⚠ {error}
+      </div>
+    );
+  }
+  if (!ready) {
+    return (
+      <div class="card" style="color:var(--color-text-soft);">Cargando tu avance…</div>
+    );
+  }
 
   const isCorrect = submitted && selected === correct;
 
