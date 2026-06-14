@@ -9,6 +9,7 @@ points: 12
 import TerminalBlock from '../../components/astro/TerminalBlock.astro';
 import Callout from '../../components/astro/Callout.astro';
 import RebaseDiagram from '../../components/astro/RebaseDiagram.astro';
+import CherryPickDiagram from '../../components/astro/CherryPickDiagram.astro';
 
 ## Última unidad: del Git correcto al Git pro
 
@@ -113,6 +114,19 @@ mergear todo:
 <span class="prompt">$</span> git cherry-pick a1b2c3d
 <span class="comment"># Aplica los cambios de a1b2c3d sobre tu rama actual</span>
 </TerminalBlock>
+
+<Callout type="info" title="¿Por qué se llama &quot;cherry-pick&quot;?">
+En inglés, *cherry-picking* ("recoger cerezas") es una expresión que significa **elegir con
+cuidado solo lo mejor o lo que te conviene**, dejando el resto. La imagen es la de alguien
+frente a un árbol que, en vez de llevarse la rama entera, **estira la mano y toma una sola
+cereza, la que quiere**.
+
+Eso es exactamente lo que hace el comando: en lugar de traer **toda** una rama con un merge,
+vas a la historia y **eliges un único commit** para aplicarlo sobre tu rama actual. Tomas la
+cereza (el commit) que necesitas y dejas el árbol (el resto de la rama) intacto.
+</Callout>
+
+<CherryPickDiagram />
 
 ## Alias: tus atajos personalizados
 

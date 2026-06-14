@@ -108,6 +108,14 @@ limpio:
 <span class="prompt">$</span> git stash apply            <span class="comment"># recuperar sin borrarlo</span>
 </TerminalBlock>
 
+<Callout type="info" title="¿Qué significa &quot;WIP&quot;?">
+En el mensaje de `git stash` aparece **WIP**, sigla de *Work In Progress* ("trabajo en
+progreso"). Es la forma en que se nombra un cambio **a medio hacer**, que todavía no está
+listo para un commit definitivo. Verás esta sigla seguido en el mundo del desarrollo:
+Git la usa por defecto para rotular lo que guardas en el stash, y también se ocupa para
+describir *commits* temporales que luego se limpian (lo verás en la Unidad 8).
+</Callout>
+
 ### Ponerle un mensaje al stash
 
 Si vas a guardar varios stashes, conviene describirlos para no perderte. Usa `push -m`:

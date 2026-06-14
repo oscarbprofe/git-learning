@@ -1,0 +1,72 @@
+---
+/** Diagrama U8: cherry-pick — se elige UN commit de otra rama y se aplica sobre la actual. */
+---
+<figure class="diagram">
+  <svg viewBox="0 0 640 300" role="img" xmlns="http://www.w3.org/2000/svg">
+    <title>git cherry-pick: traer un commit específico</title>
+    <desc>
+      De la rama feature se elige un solo commit (la "cereza") y se aplica como un commit
+      nuevo sobre main, sin traer el resto de la rama.
+    </desc>
+    <defs>
+      <marker id="cp-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M0 0 L10 5 L0 10 z" fill="var(--color-error)"></path>
+      </marker>
+    </defs>
+
+    <!-- Leyenda -->
+    <rect x="30" y="14" width="64" height="28" rx="6" fill="#d9e4fa" stroke="var(--duoc-azul-escuela-oscuro)" stroke-width="2"></rect>
+    <text x="62" y="33" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--duoc-azul-escuela-oscuro)">main</text>
+    <rect x="106" y="14" width="84" height="28" rx="6" fill="#fcefce" stroke="var(--duoc-amarillo-oscuro)" stroke-width="2"></rect>
+    <text x="148" y="33" text-anchor="middle" font-size="12.5" font-weight="700" fill="#7a5a10">feature</text>
+    <rect x="202" y="14" width="128" height="28" rx="6" fill="#fdeaea" stroke="var(--color-error)" stroke-width="2"></rect>
+    <text x="266" y="33" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--color-error)">commit elegido</text>
+
+    <!-- Línea main -->
+    <line x1="70" y1="135" x2="500" y2="135" stroke="var(--duoc-gris-oscuro)" stroke-width="3"></line>
+    <line x1="500" y1="135" x2="585" y2="135" stroke="var(--duoc-gris-claro)" stroke-width="3" stroke-dasharray="2 8" stroke-linecap="round"></line>
+
+    <!-- Bifurcación + línea feature -->
+    <path d="M70 135 C 70 180, 90 230, 120 230" fill="none" stroke="var(--duoc-gris-oscuro)" stroke-width="3"></path>
+    <line x1="120" y1="230" x2="470" y2="230" stroke="var(--duoc-gris-oscuro)" stroke-width="3"></line>
+    <line x1="470" y1="230" x2="585" y2="230" stroke="var(--duoc-gris-claro)" stroke-width="3" stroke-dasharray="2 8" stroke-linecap="round"></line>
+
+    <!-- Commits main -->
+    <circle cx="70"  cy="135" r="14" fill="var(--duoc-azul-escuela)" stroke="var(--duoc-azul-escuela-oscuro)" stroke-width="2.5"></circle>
+    <circle cx="200" cy="135" r="14" fill="var(--duoc-azul-escuela)" stroke="var(--duoc-azul-escuela-oscuro)" stroke-width="2.5"></circle>
+    <!-- Commit cherry-pickeado (copia, en rojo, con apóstrofo) -->
+    <circle cx="450" cy="135" r="15" fill="#ef8f8f" stroke="var(--color-error)" stroke-width="3"></circle>
+    <text x="450" y="139" text-anchor="middle" font-size="12" font-weight="700" fill="#7a1414">C'</text>
+
+    <!-- Commits feature -->
+    <circle cx="160" cy="230" r="14" fill="var(--duoc-amarillo)" stroke="var(--duoc-amarillo-oscuro)" stroke-width="2.5"></circle>
+    <!-- La "cereza": commit elegido -->
+    <circle cx="300" cy="230" r="15" fill="#ef8f8f" stroke="var(--color-error)" stroke-width="3"></circle>
+    <text x="300" y="234" text-anchor="middle" font-size="12" font-weight="700" fill="#7a1414">C</text>
+    <circle cx="430" cy="230" r="14" fill="var(--duoc-amarillo)" stroke="var(--duoc-amarillo-oscuro)" stroke-width="2.5"></circle>
+
+    <!-- Cerecita decorativa sobre el commit elegido -->
+    <g>
+      <line x1="300" y1="200" x2="293" y2="208" stroke="#2e7d32" stroke-width="2"></line>
+      <line x1="300" y1="200" x2="307" y2="208" stroke="#2e7d32" stroke-width="2"></line>
+      <circle cx="291" cy="211" r="4.5" fill="var(--color-error)"></circle>
+      <circle cx="309" cy="211" r="4.5" fill="var(--color-error)"></circle>
+      <path d="M300 200 q 6 -5 12 -3" fill="none" stroke="#2e7d32" stroke-width="2"></path>
+    </g>
+
+    <!-- Flecha del cherry-pick: del commit elegido sube a la copia en main -->
+    <path d="M312 220 C 380 175, 410 145, 432 138" fill="none" stroke="var(--color-error)" stroke-width="2.5" stroke-dasharray="5 4" marker-end="url(#cp-arrow)"></path>
+    <text x="392" y="100" text-anchor="middle" font-size="12.5" font-weight="700" font-family="var(--font-mono)" fill="var(--color-error)">git cherry-pick</text>
+  </svg>
+  <figcaption>
+    Eliges <strong>un solo commit</strong> de <code>feature</code> (la cereza) y Git lo aplica
+    como un commit nuevo (<code>C'</code>) sobre <code>main</code>, sin traer el resto de la rama.
+  </figcaption>
+</figure>
+
+<style>
+  .diagram { margin: var(--sp-5) 0; padding: var(--sp-4); background: var(--duoc-gris-fondo); border-radius: var(--radius-md); }
+  .diagram svg { display: block; width: 100%; height: auto; max-width: 640px; margin: 0 auto; }
+  .diagram figcaption { margin-top: var(--sp-3); text-align: center; font-size: var(--fs-sm); color: var(--color-text-soft); }
+  .diagram code { font-family: var(--font-mono); font-size: 0.85em; }
+</style>
