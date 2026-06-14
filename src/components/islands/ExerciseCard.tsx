@@ -21,7 +21,7 @@ interface Props {
 export default function ExerciseCard(props: Props) {
   const { unitSlug, id, prompt, scenario, accept, hint, expectedHint, value, index, total } =
     props;
-  const { user, ready, error } = useInitializedProgress();
+  const { user, ready, error, authChecked } = useInitializedProgress();
   const state = useStore($state);
 
   const stored = state?.units[unitSlug]?.exercises[id];
@@ -85,7 +85,7 @@ export default function ExerciseCard(props: Props) {
     }
   }
 
-  if (!user) return <div class="ex-card card disabled">Inicia sesión para resolver el ejercicio.</div>;
+  if (authChecked && !user) return <div class="ex-card card disabled">Inicia sesión para resolver el ejercicio.</div>;
   if (error) {
     return (
       <div class="ex-card card" style="background:#ffebee;color:#c62828;border-color:#ef9a9a;">

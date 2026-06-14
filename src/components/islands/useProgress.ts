@@ -23,25 +23,37 @@ function initOnce(user: SessionUser): Promise<void> {
   return _initPromise;
 }
 
-export function useSession(): SessionUser | null {
-  const [user, setUser] = useState<SessionUser | null>(null);
+/** Estado de sesión con bandera `checked`: false mientras Firebase aún resuelve
+ * si hay sesión persistida; true una vez que respondió (con usuario o sin él).
+ * Permite no mostrar el login "parpadeando" antes de saber si hay sesión. */
+export function useSessionState(): { user: SessionUser | null; checked: boolean } {
+  const [state, setState] = useState<{ user: SessionUser | null; checked: boolean }>({
+    user: null,
+    checked: false,
+  });
   useEffect(() => {
     try {
-      return onAuthChange(setUser);
+      return onAuthChange((u) => setState({ user: u, checked: true }));
     } catch (err) {
       console.error('[git-challenge] onAuthChange falló:', err);
+      setState({ user: null, checked: true });
       return undefined;
     }
   }, []);
-  return user;
+  return state;
+}
+
+export function useSession(): SessionUser | null {
+  return useSessionState().user;
 }
 
 export function useInitializedProgress(): {
   user: SessionUser | null;
   ready: boolean;
   error: string | null;
+  authChecked: boolean;
 } {
-  const user = useSession();
+  const { user, checked: authChecked } = useSessionState();
   const [ready, setReady] = useState(false);
   const error = useStore($loadError);
 
@@ -76,7 +88,7 @@ export function useInitializedProgress(): {
     };
   }, [user?.email]);
 
-  return { user, ready, error };
+  return { user, ready, error, authChecked };
 }
 
 export { useStore, $state, $unitsMeta };

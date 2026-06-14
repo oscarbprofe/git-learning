@@ -20,7 +20,7 @@ interface Props {
 }
 
 export default function SummaryView({ catalog }: Props) {
-  const { user, ready, error } = useInitializedProgress();
+  const { user, ready, error, authChecked } = useInitializedProgress();
   const summaries = useStore($summaries);
   const totalScore = useStore($totalScore);
   const totalMax = useStore($totalMax);
@@ -30,6 +30,7 @@ export default function SummaryView({ catalog }: Props) {
 
   const [exporting, setExporting] = useState(false);
 
+  if (!authChecked) return <p class="loading">Cargando…</p>;
   if (!user) return <LoginCard />;
   if (error) {
     return (

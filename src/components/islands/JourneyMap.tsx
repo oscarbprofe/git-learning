@@ -4,9 +4,14 @@ import { useInitializedProgress } from './useProgress';
 import LoginCard from './LoginCard';
 
 export default function JourneyMap() {
-  const { user, ready, error } = useInitializedProgress();
+  const { user, ready, error, authChecked } = useInitializedProgress();
   const summaries = useStore($summaries);
 
+  // Mientras Firebase aún resuelve si hay sesión, mostramos carga (no el login),
+  // para que al volver al mapa no parpadee el botón de Google.
+  if (!authChecked) {
+    return <p class="loading">Cargando tu avance…</p>;
+  }
   if (!user) {
     return <LoginCard />;
   }

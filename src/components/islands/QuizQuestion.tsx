@@ -22,7 +22,7 @@ interface Props {
 
 export default function QuizQuestion(props: Props) {
   const { unitSlug, id, prompt, options, correct, explanation, value, index, total } = props;
-  const { user, ready, error } = useInitializedProgress();
+  const { user, ready, error, authChecked } = useInitializedProgress();
   const state = useStore($state);
   const stored = state?.units[unitSlug]?.quiz[id];
 
@@ -50,7 +50,7 @@ export default function QuizQuestion(props: Props) {
     });
   }
 
-  if (!user) return <div class="card">Inicia sesión para responder el quiz.</div>;
+  if (authChecked && !user) return <div class="card">Inicia sesión para responder el quiz.</div>;
   if (error) {
     return (
       <div class="card" style="background:#ffebee;color:#c62828;border:1px solid #ef9a9a;">
