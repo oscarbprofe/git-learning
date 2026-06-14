@@ -23,6 +23,12 @@ export interface UnitProgress {
   completedAt: string | null;
 }
 
+export interface ReportRecord {
+  hash: string; // sello de integridad del avance al momento de exportar
+  at: string; // ISO-8601 de la exportación
+  pct: number; // porcentaje de avance reportado
+}
+
 export interface ProgressState {
   version: 1;
   student: { name: string; email: string };
@@ -30,6 +36,8 @@ export interface ProgressState {
   lastActivityAt: string;
   completedAt: string | null;
   units: Record<string, UnitProgress>;
+  /** Última exportación de informe PDF; campo de auditoría, no afecta el hash. */
+  lastReport?: ReportRecord;
 }
 
 const SCHEMA_VERSION = 1;
@@ -211,8 +219,32 @@ async function sha256(text: string): Promise<string> {
     .join('');
 }
 
-/** Hash del estado de progreso usado como sello de verificación en el PDF. */
+/** Hash del estado de progreso usado como sello de verificación en el PDF.
+ * Excluye los campos de auditoría (`integrity`, `lastReport`) para que el hash
+ * dependa SOLO del avance: el mismo avance produce siempre el mismo sello. */
 export async function computeIntegrity(state: ProgressState): Promise<string> {
-  const { integrity: _omit, ...rest } = state as ProgressState & { integrity?: string };
+  const { integrity: _omit, lastReport: _lr, ...rest } = state as ProgressState & {
+    integrity?: string;
+  };
   return sha256(JSON.stringify(rest));
+}
+
+/** Persiste en Firestore el sello de la última exportación de informe (auditoría).
+ * Permite contrastar después el código del PDF contra lo guardado en la nube. */
+export async function recordReport(email: string, record: ReportRecord): Promise<void> {
+  if (typeof window === 'undefined') return;
+
+  if (!isFirebaseConfigured()) {
+    // Modo dev: lo dejamos dentro del estado en localStorage.
+    const existing = loadLocal(email);
+    if (existing) {
+      existing.lastReport = record;
+      window.localStorage.setItem(localKey(email), JSON.stringify(existing));
+    }
+    return;
+  }
+
+  const { db, fs } = await getFirestore();
+  const ref = fs.doc(db, docPath(email));
+  await fs.setDoc(ref, { lastReport: record }, { merge: true });
 }

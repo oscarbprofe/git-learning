@@ -198,6 +198,12 @@ export async function signInWithGoogle(): Promise<SessionUser> {
 - UI: indicador de guardado en el header (`SaveStatus`), estados de carga en tarjetas de ejercicio/quiz, y mensaje de error de carga con botón "Reintentar".
 - Reglas de seguridad Firestore: `request.auth.token.email == <docId> && email_verified == true`.
 
+### 4.6 Sello de verificación del informe (storage.ts / pdf.ts)
+- `computeIntegrity(state)`: SHA-256 (Web Crypto) del avance + sal fija. **Excluye** los campos de auditoría (`integrity`, `lastReport`) para que el sello dependa solo del avance — el mismo avance produce siempre el mismo código.
+- Al exportar el PDF, además de imprimir el sello truncado en el pie, se **persiste en Firestore** vía `recordReport(email, { hash, at, pct })`, que hace un `setDoc(..., { merge: true })` sobre el campo `lastReport` del documento `students/<email>`. Así queda un registro en la nube (hash + fecha + % de avance) para **contrastar el código del PDF entregado** contra lo guardado.
+- En modo dev (sin Firebase) el sello se guarda dentro del estado en `localStorage`.
+- Sigue siendo evidencia **disuasiva**, no infalible: la sal es pública (está en el repo), por lo que un actor técnico podría recomputar un hash válido para datos alterados. Para verificación fuerte habría que mover el cálculo del sello a un entorno con secreto (fuera del alcance v1).
+
 ## 5. Plan de pruebas
 
 | Tipo | Herramienta | Cobertura |
@@ -216,7 +222,7 @@ export async function signInWithGoogle(): Promise<SessionUser> {
 | Firestore inaccesible (offline) al cargar/guardar | Avance no carga o no guarda | Mensaje de error con "Reintentar" al cargar; indicador "Sin guardar — revisa tu conexión" al escribir; actualización optimista mantiene el dato en memoria para reintento. |
 | Logo oficial no disponible | Bloquea identidad visual | Solicitar al docente/Comunicación y Marketing; mientras tanto placeholder de texto "Duoc UC" con tipografía correcta, nunca un logo redibujado. |
 | Reglas de Firestore mal configuradas | Fuga o pérdida de datos entre estudiantes | Reglas que restringen cada documento a su dueño (`email == docId && email_verified`); probar acceso cruzado denegado. |
-| Manipulación del cliente para inflar nota | Nota fraudulenta | Hash de integridad + timestamps por respuesta en el PDF; documentar al profesor que el informe es evidencia disuasiva, no criptográficamente infalible. |
+| Manipulación del cliente para inflar nota | Nota fraudulenta | Hash de integridad + timestamps por respuesta en el PDF, **persistido en Firestore** (`lastReport`) al exportar para poder contrastar el código del PDF contra la nube (ver §4.6). Sigue siendo evidencia disuasiva, no criptográficamente infalible (sal pública); se documenta como tal. |
 | Tildes/ñ en jsPDF | PDF ilegible | Probar temprano (Fase 7); si falla, embeber fuente Lato TTF en jsPDF. |
 | Ambigüedad en respuestas de ejercicios | Frustración del estudiante | Patrones tolerantes + pistas + revisar con piloto (un estudiante real prueba la Unidad 1 al final de Fase 4). |
 

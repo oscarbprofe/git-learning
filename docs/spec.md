@@ -162,6 +162,11 @@ Colección `students`, un documento por estudiante con ID = correo institucional
       },
       "completedAt": "ISO-8601 | null"  // se setea al responder todos los ejercicios + quiz
     }
+  },
+  "lastReport": {                       // sello de la última exportación de informe (auditoría)
+    "hash": "sha256-hex",
+    "at": "ISO-8601",
+    "pct": 100
   }
 }
 ```
@@ -170,7 +175,7 @@ Colección `students`, un documento por estudiante con ID = correo institucional
 - **Feedback de guardado** en el header: indicador "Guardando… / Guardado / Sin guardar — revisa tu conexión".
 - **Manejo de error de carga**: si Firestore es inaccesible al iniciar, se muestra un mensaje con botón "Reintentar" y **no** se crea un estado vacío (evita sobrescribir datos existentes).
 - **Reglas de seguridad de Firestore**: cada estudiante solo puede leer/escribir su propio documento (`request.auth.token.email == <docId>` y `email_verified == true`).
-- `integrity` (sello de verificación del PDF): SHA-256 (Web Crypto) del payload + sal fija; se calcula **al exportar** y se imprime truncado en el pie del informe como evidencia disuasiva (no infalible; se documenta como tal). Ya no se almacena en el documento.
+- **Sello de verificación del PDF**: SHA-256 (Web Crypto) del avance + sal fija. Se calcula **al exportar** (excluyendo los campos de auditoría para que dependa solo del avance) y se imprime truncado en el pie del informe. Al exportar se **persiste** en el campo `lastReport` del documento (`hash`, `at`, `pct`) mediante `setDoc(..., { merge: true })`, de modo que el código impreso pueda **contrastarse contra la nube**. Es evidencia **disuasiva, no infalible**: la sal es pública, por lo que para verificación criptográfica fuerte habría que calcular el sello en un entorno con secreto (fuera de alcance v1).
 - Botón "Reiniciar mi avance" con doble confirmación (borra solo el documento del usuario actual).
 
 ## 9. Indicador de progreso
@@ -194,7 +199,7 @@ Colección `students`, un documento por estudiante con ID = correo institucional
 1. **Portada/encabezado:** marca Duoc UC (según normas de logo §11), título "Informe de Viaje de Aprendizaje Git", nombre y correo del estudiante, fecha de inicio, fecha de término (o "en curso"), fecha de emisión y estado de avance (% global, unidades completadas).
 2. **Resumen de resultados:** tabla por unidad (estado: completada / en curso / no iniciada · puntaje obtenido / máximo / %), **puntaje total 0–100** y **nota 1.0–7.0** destacada, con leyenda "Exigencia 60% — nota 4.0 con 60 puntos. Ítems no respondidos puntúan 0".
 3. **Detalle de respuestas:** por unidad iniciada, cada ejercicio (enunciado resumido, respuesta del estudiante, intentos, correcto/incorrecto, puntaje) y cada pregunta de quiz (enunciado, alternativa marcada, correcta, puntaje). Ítems pendientes listados como "sin responder".
-4. **Pie de página:** código de verificación (hash de integridad truncado), `duoc.cl`, numeración de páginas.
+4. **Pie de página:** código de verificación (hash de integridad truncado), `duoc.cl`, numeración de páginas. El código se **registra en Firestore** (`lastReport`) al exportar, permitiendo contrastar el PDF entregado contra la nube (ver §8).
 
 ## 11. Diseño según Manual de Identidad Corporativa Duoc UC 2024
 

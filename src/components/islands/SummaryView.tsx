@@ -54,6 +54,7 @@ export default function SummaryView({ catalog }: Props) {
     setExportError(null);
     try {
       const { exportReport } = await import('../../lib/pdf');
+      const { recordReport } = await import('../../lib/storage');
       const integrityHash = await computeIntegrity(state);
       await exportReport({
         state,
@@ -63,6 +64,12 @@ export default function SummaryView({ catalog }: Props) {
         totalScore,
         totalMax,
         integrityHash,
+      });
+      // Guarda el sello de esta exportación en Firestore (auditoría/verificación).
+      await recordReport(state.student.email, {
+        hash: integrityHash,
+        at: new Date().toISOString(),
+        pct,
       });
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
