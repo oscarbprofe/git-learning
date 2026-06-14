@@ -27,11 +27,13 @@ export default function UserMenu() {
         aria-expanded={open}
       >
         <span class="avatar" aria-hidden="true">{initials}</span>
-        <span class="name">{user.name}</span>
       </button>
       {open && (
         <div class="dropdown" role="menu">
-          <div class="email">{user.email}</div>
+          <div class="user-info">
+            <span class="name">{user.name}</span>
+            <span class="user-email">{user.email}</span>
+          </div>
           <a href="/resumen" role="menuitem">Ver resumen e informe</a>
           <button
             type="button"
@@ -52,7 +54,7 @@ export default function UserMenu() {
         .user-menu { position: relative; }
         .user-btn {
           display: inline-flex; align-items: center; gap: 8px;
-          padding: 6px 14px 6px 6px; border-radius: 999px;
+          padding: 6px 6px 6px 6px; border-radius: 999px;
           border: 1px solid rgba(255, 255, 255, 0.18);
           background: rgba(255, 255, 255, 0.08);
           color: var(--duoc-blanco);
@@ -64,12 +66,11 @@ export default function UserMenu() {
           border-color: var(--duoc-amarillo);
         }
         .avatar {
-          width: 30px; height: 30px; border-radius: 50%;
+          width: 40px; height: 40px; border-radius: 50%;
           background: var(--duoc-amarillo); color: var(--duoc-negro);
           display: inline-flex; align-items: center; justify-content: center;
           font-size: 0.8rem; font-weight: 900;
         }
-        .name { font-size: 0.9rem; }
         .dropdown {
           position: absolute; right: 0; top: calc(100% + 8px);
           background: white; border: 1px solid var(--color-border);
@@ -77,10 +78,16 @@ export default function UserMenu() {
           min-width: 240px; padding: 8px; z-index: 100;
           display: flex; flex-direction: column;
         }
-        .dropdown .email {
-          font-size: 0.8rem; color: var(--color-text-soft);
+        .dropdown .user-info {
+          display: flex; flex-direction: column; gap: 2px;
           padding: 8px 10px; border-bottom: 1px solid var(--color-border);
           margin-bottom: 4px;
+        }
+        .dropdown .user-info .name {
+          font-size: 0.9rem; font-weight: 700; color: var(--color-text);
+        }
+        .dropdown .user-info .user-email {
+          font-size: 0.8rem; color: var(--color-text-soft); word-break: break-all;
         }
         .dropdown a, .dropdown button {
           background: none; border: none; text-align: left;
@@ -89,9 +96,6 @@ export default function UserMenu() {
           font: inherit; cursor: pointer;
         }
         .dropdown a:hover, .dropdown button:hover { background: var(--duoc-gris-fondo); }
-        @media (max-width: 640px) {
-          .name { display: none; }
-        }
       `}</style>
     </div>
   );
