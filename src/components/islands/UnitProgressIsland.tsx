@@ -1,33 +1,16 @@
 import { useStore } from '@nanostores/preact';
 import { $summaries } from '../../lib/progress';
 import { useInitializedProgress } from './useProgress';
-import { useEffect } from 'preact/hooks';
-import { markSectionVisited } from '../../lib/progress';
 
 interface Props {
   unitSlug: string;
 }
 
-const SECTION_LABELS: Record<string, string> = {
-  conceptos: 'Conceptos',
-  ejemplos: 'Ejemplos',
-  ejercicios: 'Ejercicios',
-  quiz: 'Quiz',
-};
-
 export default function UnitProgressIsland({ unitSlug }: Props) {
-  const { user, ready } = useInitializedProgress();
+  const { user, ready, error } = useInitializedProgress();
   const summaries = useStore($summaries);
 
-  // Marcar "conceptos" como visitada automáticamente al cargar la unidad,
-  // ya que esta página renderiza la teoría introductoria.
-  useEffect(() => {
-    if (ready && user) {
-      void markSectionVisited(unitSlug, 'conceptos');
-    }
-  }, [ready, user?.email, unitSlug]);
-
-  if (!user || !ready) return null;
+  if (!user || !ready || error) return null;
   const summary = summaries.find((s) => s.meta.slug === unitSlug);
   if (!summary) return null;
   if (summary.status === 'locked') {
@@ -39,22 +22,31 @@ export default function UnitProgressIsland({ unitSlug }: Props) {
     );
   }
 
-  const visited = new Set(summary.unit?.sectionsVisited ?? []);
+  const exDone = Object.keys(summary.unit?.exercises ?? {}).length;
+  const qDone = Object.keys(summary.unit?.quiz ?? {}).length;
+  const exTotal = summary.meta.exerciseCount;
+  const qTotal = summary.meta.quizCount;
+  const completed = summary.status === 'completed';
 
   return (
-    <nav class="unit-stepper" aria-label="Secciones de la unidad">
-      {Object.entries(SECTION_LABELS).map(([key, label]) => {
-        const done = visited.has(key);
-        return (
-          <a href={`#${key}`} class={`step ${done ? 'done' : ''}`}>
-            <span class="dot" aria-hidden="true">{done ? '✓' : '·'}</span>
-            <span>{label}</span>
-          </a>
-        );
-      })}
+    <nav class="unit-stepper" aria-label="Progreso de la unidad">
+      <a href="#ejercicios" class={`step ${exDone >= exTotal ? 'done' : ''}`}>
+        <span class="dot" aria-hidden="true">{exDone >= exTotal ? '✓' : '·'}</span>
+        <span>Ejercicios <strong>{exDone}/{exTotal}</strong></span>
+      </a>
+      <a href="#quiz" class={`step ${qDone >= qTotal ? 'done' : ''}`}>
+        <span class="dot" aria-hidden="true">{qDone >= qTotal ? '✓' : '·'}</span>
+        <span>Quiz <strong>{qDone}/{qTotal}</strong></span>
+      </a>
+
+      {completed && (
+        <span class="unit-complete-badge">✓ Unidad completada</span>
+      )}
+
       <div class="unit-score">
         <strong>{summary.score.toFixed(1)}</strong>/{summary.maxScore} pts
       </div>
+
       <style>{`
         .unit-stepper {
           display: flex; gap: var(--sp-2); flex-wrap: wrap;
@@ -78,6 +70,12 @@ export default function UnitProgressIsland({ unitSlug }: Props) {
         }
         .step.done .dot { background: var(--color-success); }
         .step.done { background: #eaf6ea; border-color: #c8e6c9; }
+        .unit-complete-badge {
+          font-size: var(--fs-sm); font-weight: 700;
+          color: #2e7d32; background: #eaf6ea;
+          padding: 6px 12px; border-radius: 999px;
+          border: 1px solid #c8e6c9;
+        }
         .unit-score {
           margin-left: auto;
           color: var(--color-text-soft);

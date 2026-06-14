@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'preact/hooks';
 import { useStore } from '@nanostores/preact';
-import { $state, recordExercise, markSectionVisited } from '../../lib/progress';
+import { $state, recordExercise } from '../../lib/progress';
 import { matchAny } from '../../lib/matcher';
 import { useInitializedProgress } from './useProgress';
 import { ATTEMPT_FACTORS, exerciseScore } from '../../lib/scoring';
@@ -21,7 +21,7 @@ interface Props {
 export default function ExerciseCard(props: Props) {
   const { unitSlug, id, prompt, scenario, accept, hint, expectedHint, value, index, total } =
     props;
-  const { user, ready } = useInitializedProgress();
+  const { user, ready, error } = useInitializedProgress();
   const state = useStore($state);
 
   const stored = state?.units[unitSlug]?.exercises[id];
@@ -29,20 +29,20 @@ export default function ExerciseCard(props: Props) {
   const [attempts, setAttempts] = useState(stored?.attempts ?? 0);
   const [feedback, setFeedback] = useState<
     null | { kind: 'ok' | 'fail' | 'done'; message: string }
-  >(
-    stored
-      ? {
-          kind: stored.correct ? 'ok' : 'done',
-          message: stored.correct
-            ? `Correcto. Obtuviste ${stored.score} de ${value} puntos.`
-            : `Ejercicio cerrado. Obtuviste ${stored.score} de ${value} puntos.`,
-        }
-      : null,
-  );
+  >(null);
 
   useEffect(() => {
-    if (ready && user) void markSectionVisited(unitSlug, 'ejercicios');
-  }, [ready, user?.email, unitSlug]);
+    if (stored) {
+      setAnswer(stored.answer);
+      setAttempts(stored.attempts);
+      setFeedback({
+        kind: stored.correct ? 'ok' : 'done',
+        message: stored.correct
+          ? `Correcto. Obtuviste ${stored.score} de ${value} puntos.`
+          : `Ejercicio cerrado. Obtuviste ${stored.score} de ${value} puntos.`,
+      });
+    }
+  }, [stored?.answer]);
 
   const closed = Boolean(stored?.correct) || attempts >= ATTEMPT_FACTORS.length;
   const remainingAttempts = ATTEMPT_FACTORS.length - attempts;
@@ -86,9 +86,35 @@ export default function ExerciseCard(props: Props) {
   }
 
   if (!user) return <div class="ex-card card disabled">Inicia sesión para resolver el ejercicio.</div>;
+  if (error) {
+    return (
+      <div class="ex-card card" style="background:#ffebee;color:#c62828;border-color:#ef9a9a;">
+        ⚠ {error}
+      </div>
+    );
+  }
+  if (!ready) {
+    return (
+      <div class="ex-card card loading-card">
+        <span class="spinner" aria-hidden="true" /> Cargando tu avance…
+        <style>{`
+          .loading-card { display: flex; align-items: center; gap: 10px; color: var(--color-text-soft); }
+          .spinner {
+            width: 16px; height: 16px; border-radius: 50%;
+            border: 2px solid var(--color-border); border-top-color: var(--duoc-amarillo);
+            animation: spin 0.8s linear infinite; display: inline-block;
+          }
+          @keyframes spin { to { transform: rotate(360deg); } }
+        `}</style>
+      </div>
+    );
+  }
+
+  const isCorrect = Boolean(stored?.correct);
+  const isFailed = closed && !isCorrect;
 
   return (
-    <div class={`ex-card card ${closed ? 'closed' : ''}`}>
+    <div class={`ex-card card ${isCorrect ? 'closed-ok' : isFailed ? 'closed-fail' : ''}`}>
       <div class="head">
         <span class="num">Ejercicio {index} de {total}</span>
         <span class="value">Vale {value} pts</span>
@@ -96,19 +122,40 @@ export default function ExerciseCard(props: Props) {
       <div class="prompt">{prompt}</div>
       {scenario && <div class="scenario">{scenario}</div>}
 
-      <form onSubmit={handleCheck}>
-        <label>
-          Escribe tu respuesta
-          <textarea
-            rows={2}
-            value={answer}
-            onInput={(e) => setAnswer((e.target as HTMLTextAreaElement).value)}
-            spellcheck={false}
-            disabled={closed}
-            placeholder="Ej.: git commit -m &quot;Mi cambio&quot;"
-          />
-        </label>
-        {!closed && (
+      {isCorrect && (
+        <div class="result-banner result-ok">
+          <span class="result-icon">✓</span>
+          <div>
+            <strong>Correcto</strong>
+            <span class="result-score">{stored!.score} / {value} pts · intento {stored!.attempts}</span>
+          </div>
+          <code class="result-answer">{stored!.answer}</code>
+        </div>
+      )}
+
+      {isFailed && (
+        <div class="result-banner result-fail">
+          <span class="result-icon">✗</span>
+          <div>
+            <strong>Intentos agotados</strong>
+            <span class="result-score">{stored!.score} / {value} pts</span>
+          </div>
+          {expectedHint && <code class="result-answer">Respuesta: {expectedHint}</code>}
+        </div>
+      )}
+
+      {!closed && (
+        <form onSubmit={handleCheck}>
+          <label>
+            Escribe tu respuesta
+            <textarea
+              rows={2}
+              value={answer}
+              onInput={(e) => setAnswer((e.target as HTMLTextAreaElement).value)}
+              spellcheck={false}
+              placeholder="Ej.: git commit -m &quot;Mi cambio&quot;"
+            />
+          </label>
           <div class="row">
             <button type="submit" class="btn btn-primary" disabled={!answer.trim()}>
               Verificar respuesta
@@ -118,13 +165,12 @@ export default function ExerciseCard(props: Props) {
               {' '}Factor: {(ATTEMPT_FACTORS[attempts] ?? 0) * 100}%
             </span>
           </div>
-        )}
-      </form>
-
-      {feedback && (
-        <div class={`feedback feedback-${feedback.kind}`} role="status">
-          {feedback.message}
-        </div>
+          {feedback && (
+            <div class={`feedback feedback-${feedback.kind}`} role="status">
+              {feedback.message}
+            </div>
+          )}
+        </form>
       )}
 
       <style>{`
@@ -156,7 +202,6 @@ export default function ExerciseCard(props: Props) {
           resize: vertical;
         }
         textarea:focus { border-color: var(--duoc-amarillo); outline: none; }
-        textarea:disabled { opacity: 0.7; }
         .row { display: flex; align-items: center; gap: var(--sp-3); margin-top: var(--sp-3); flex-wrap: wrap; }
         .hint-text { color: var(--color-text-soft); font-size: var(--fs-xs); }
         .feedback {
@@ -166,7 +211,28 @@ export default function ExerciseCard(props: Props) {
         .feedback-ok { background: #e8f5e9; color: var(--color-success); }
         .feedback-fail { background: #fff4e5; color: var(--color-warning); }
         .feedback-done { background: #ffebee; color: var(--color-error); }
-        .ex-card.closed { opacity: 0.95; border-color: #c8e6c9; }
+
+        /* estados completado / agotado */
+        .ex-card.closed-ok { border-color: #66bb6a; }
+        .ex-card.closed-fail { border-color: #ef9a9a; }
+
+        .result-banner {
+          display: flex; flex-wrap: wrap; align-items: center; gap: var(--sp-3);
+          padding: var(--sp-3) var(--sp-4);
+          border-radius: var(--radius-md);
+          margin-top: var(--sp-2);
+        }
+        .result-ok { background: #e8f5e9; color: #2e7d32; }
+        .result-fail { background: #ffebee; color: #c62828; }
+        .result-icon { font-size: 1.4rem; font-weight: 900; line-height: 1; }
+        .result-banner > div { display: flex; flex-direction: column; gap: 2px; }
+        .result-score { font-size: var(--fs-xs); opacity: 0.8; }
+        .result-answer {
+          width: 100%; margin-top: var(--sp-2);
+          font-family: var(--font-mono); font-size: var(--fs-sm);
+          background: rgba(0,0,0,0.06); padding: 6px 10px;
+          border-radius: var(--radius-sm); word-break: break-all;
+        }
         .ex-card.disabled { background: var(--duoc-gris-fondo); color: var(--color-text-soft); }
       `}</style>
     </div>

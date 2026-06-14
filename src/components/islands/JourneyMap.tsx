@@ -4,11 +4,29 @@ import { useInitializedProgress } from './useProgress';
 import LoginCard from './LoginCard';
 
 export default function JourneyMap() {
-  const { user, ready } = useInitializedProgress();
+  const { user, ready, error } = useInitializedProgress();
   const summaries = useStore($summaries);
 
   if (!user) {
     return <LoginCard />;
+  }
+  if (error) {
+    return (
+      <div class="load-error" role="alert">
+        <p>⚠ {error}</p>
+        <button type="button" class="btn btn-primary" onClick={() => location.reload()}>
+          Reintentar
+        </button>
+        <style>{`
+          .load-error {
+            text-align: center; padding: var(--sp-6);
+            background: #ffebee; color: #c62828;
+            border-radius: var(--radius-lg); display: flex;
+            flex-direction: column; gap: var(--sp-3); align-items: center;
+          }
+        `}</style>
+      </div>
+    );
   }
   if (!ready) {
     return <p class="loading">Cargando tu avance…</p>;

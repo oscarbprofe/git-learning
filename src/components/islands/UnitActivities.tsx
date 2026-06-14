@@ -1,6 +1,3 @@
-import { useEffect } from 'preact/hooks';
-import { markSectionVisited } from '../../lib/progress';
-import { useInitializedProgress } from './useProgress';
 import ExerciseCard from './ExerciseCard';
 import QuizQuestion from './QuizQuestion';
 
@@ -25,20 +22,11 @@ interface QuizItem {
 
 interface Props {
   unitSlug: string;
-  ejemplosVisitMarker?: boolean;
   exercises: Exercise[];
   quiz: QuizItem[];
 }
 
-export default function UnitActivities({ unitSlug, exercises, quiz, ejemplosVisitMarker = true }: Props) {
-  const { user, ready } = useInitializedProgress();
-
-  useEffect(() => {
-    if (ready && user && ejemplosVisitMarker) {
-      void markSectionVisited(unitSlug, 'ejemplos');
-    }
-  }, [ready, user?.email, unitSlug, ejemplosVisitMarker]);
-
+export default function UnitActivities({ unitSlug, exercises, quiz }: Props) {
   return (
     <div class="unit-activities">
       <section id="ejercicios" class="section">

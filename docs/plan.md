@@ -1,6 +1,8 @@
 # plan.md — Plan de Desarrollo: Git Challenge
 
-**Referencia:** [spec.md](spec.md) · **Stack base existente:** Astro `^6.4.6`, Node ≥ 22.12, pnpm, TypeScript (`tsconfig` strict de Astro). Proyecto actualmente vacío (solo `src/pages/index.astro`).
+**Referencia:** [spec.md](spec.md) · **Stack base existente:** Astro `^6.4.6`, Node ≥ 22.12, pnpm, TypeScript (`tsconfig` strict de Astro).
+
+> **Actualización v1.1 (post-implementación):** la persistencia migró de `localStorage` a **Cloud Firestore** (sincronización entre dispositivos); la autenticación pasó de *Email link* a **Google OAuth** (la cuarentena del correo Duoc UC bloqueaba los enlaces); la compleción de unidad depende solo de **ejercicios + quiz**. Las secciones marcadas como completadas siguen describiendo el plan original; las notas en línea indican qué cambió.
 
 ---
 
@@ -9,11 +11,12 @@
 | Decisión | Elección | Justificación |
 |----------|----------|---------------|
 | Framework de islas | **Preact** (`@astrojs/preact`) | Interactividad necesaria (quiz, ejercicios, progreso, export) con huella mínima (~4 kB); API React conocida. |
-| Estado compartido | **nanostores** + `@nanostores/preact` + `@nanostores/persistent` | Estado reactivo entre islas (progreso en header + contenido) con persistencia automática en `localStorage`. |
+| Estado compartido | **nanostores** + `@nanostores/preact` | Estado reactivo entre islas (progreso en header + contenido). La persistencia ya no es automática vía `@nanostores/persistent`: se escribe explícitamente en Firestore (ver fila Persistencia). |
+| Persistencia | **Cloud Firestore** (`firebase/firestore`) — documento `students/<email>` | Avance sincronizado entre dispositivos, asociado a la cuenta. Acceso directo desde el cliente con reglas de seguridad (cada estudiante solo su documento); cero backend propio. Fallback a `localStorage` solo en modo dev sin Firebase. |
 | Contenido de unidades | **Astro Content Collections** — MDX para teoría/ejemplos (`@astrojs/mdx`), colección JSON con schema Zod para ejercicios y quiz | Contenido versionado en repo, tipado y validado en build; agregar/editar unidades sin tocar código. |
 | Estilos | CSS plano con custom properties (tokens Duoc UC) + scoped styles de Astro | Sin dependencia de Tailwind; el manual define un sistema pequeño y estable. |
 | Tipografías | `@fontsource/lato` + `@fontsource/merriweather` | Self-hosted, sin CDN, conforme a tipografías web del manual. |
-| Autenticación | `firebase/auth` — *Email link (passwordless)* | Sin acceso al Azure de Duoc UC. Verifica posesión de un buzón institucional (`@duocuc.cl`, `@profesor.duoc.cl`, `@duoc.cl`) — misma garantía de identidad que un login Microsoft — con solo SDK cliente + servicio gratuito; cero backend propio. |
+| Autenticación | `firebase/auth` — **Google OAuth** (`signInWithPopup`) | Sin acceso al Azure de Duoc UC. Los correos Duoc UC son cuentas Google Workspace: login instantáneo sin correos. Verifica posesión de la cuenta institucional (`@duocuc.cl`, `@profesor.duoc.cl`, `@duoc.cl`) con validación de dominio exacto post-login. *(El plan original usaba Email link, descartado porque la cuarentena institucional bloquea los enlaces.)* |
 | PDF | `jspdf` + `jspdf-autotable` (import dinámico al exportar) | Generación 100% cliente; autotable simplifica tablas del informe. |
 | Resaltado de código | `Shiki` (incluido en Astro) para bloques en MDX | Cero JS en runtime para teoría. |
 | Hash de integridad | Web Crypto API (`crypto.subtle.digest`) | Nativo, sin dependencias. |
@@ -49,8 +52,8 @@ git-challenge/
 │  │  ├─ units/u1.mdx … u8.mdx    # conceptos + ejemplos (frontmatter: orden, título, puntos)
 │  │  └─ activities/u1.json … u8.json  # ejercicios (patrones aceptados) + preguntas MCQ
 │  ├─ lib/
-│  │  ├─ auth.ts                  # wrapper Firebase Auth: envío/consumo de enlace, sesión, allowlist de dominios
-│  │  ├─ storage.ts               # esquema localStorage v1, migraciones, hash integridad
+│  │  ├─ auth.ts                  # wrapper Firebase Auth: signInWithGoogle, sesión, allowlist de dominios
+│  │  ├─ storage.ts               # persistencia Firestore (students/<email>), fallback localStorage dev, hash integridad PDF
 │  │  ├─ progress.ts              # stores nanostores: respuestas, % global, unlock de unidades
 │  │  ├─ scoring.ts               # puntajes, factor de intentos, pctToNota() exigencia 60%
 │  │  ├─ matcher.ts               # normalización y matching de respuestas de ejercicios
@@ -150,13 +153,15 @@ export function pctToNota(pct: number): number {
 - Nunca evaluar con `eval`; solo `RegExp.test` sobre entrada normalizada.
 
 ### 4.3 Desbloqueo de unidades (progress.ts)
-- `unitComplete(u) := todasSeccionesVisitadas(u) && todosEjerciciosCerrados(u) && todoQuizRespondido(u)`
-- `unlocked(n) := n === 1 || unitComplete(n-1)`; ruta de unidad bloqueada redirige al mapa con aviso.
+- `unitComplete(u) := todosEjerciciosRespondidos(u) && todoQuizRespondido(u)` — la teoría y los ejemplos son lectura libre y **no** cuentan. *(El plan original incluía `todasSeccionesVisitadas`; se eliminó.)*
+- `unlocked(n) := n === 1 || unitComplete(n-1)`; unidad bloqueada muestra un banner en lugar del contenido.
+- `reconcileCompletion(state)` recalcula `completedAt` de cada unidad y del viaje al cargar, reparando estados guardados antes de cambios en la lógica.
 
-### 4.4 Autenticación por enlace de correo (auth.ts)
+### 4.4 Autenticación con Google (auth.ts)
 ```ts
-const app = initializeApp(firebaseConfig);            // PUBLIC_FIREBASE_* desde .env
-const auth = getAuth(app);
+const fbApp = initializeApp(firebaseConfig);          // PUBLIC_FIREBASE_* desde .env
+const auth = getAuth(fbApp);
+await setPersistence(auth, browserLocalPersistence);  // sesión sobrevive a cierres
 
 // Allowlist institucional: estudiantes, docentes y funcionarios.
 // Comparación exacta del dominio — un endsWith aceptaría dominios ajenos como "otraduoc.cl".
@@ -167,26 +172,23 @@ export function isInstitutionalEmail(email: string): boolean {
   return ALLOWED_DOMAINS.includes(domain ?? "");
 }
 
-export async function sendLoginLink(email: string, name: string) {
-  if (!isInstitutionalEmail(email)) throw new Error("DOMINIO_INVALIDO");
-  localStorage.setItem("gc:pendingEmail", email);
-  localStorage.setItem("gc:pendingName", name);
-  await sendSignInLinkToEmail(auth, email, {
-    url: window.location.origin,                      // vuelve al sitio al abrir el enlace
-    handleCodeInApp: true,
-  });
-}
-
-export async function completeLoginIfLink() {
-  if (!isSignInWithEmailLink(auth, window.location.href)) return;
-  const email = localStorage.getItem("gc:pendingEmail")
-    ?? window.prompt("Confirma tu correo institucional Duoc UC"); // enlace abierto en otro navegador
-  const cred = await signInWithEmailLink(auth, email!, window.location.href);
-  if (!isInstitutionalEmail(cred.user.email ?? "")) return signOut(auth);
-  const name = localStorage.getItem("gc:pendingName");
-  if (name && !cred.user.displayName) await updateProfile(cred.user, { displayName: name });
+export async function signInWithGoogle(): Promise<SessionUser> {
+  const provider = new GoogleAuthProvider();
+  const cred = await signInWithPopup(auth, provider);   // popup de selección de cuenta Google
+  const email = cred.user.email ?? "";
+  if (!isInstitutionalEmail(email)) {                   // re-validación post-login
+    await signOut(auth);
+    throw new Error("DOMINIO_INVALIDO");
+  }
+  return { name: cred.user.displayName ?? email.split("@")[0], email };
 }
 ```
+
+### 4.5 Persistencia y feedback (storage.ts / progress.ts)
+- `storage.ts`: `loadState`/`saveState`/`clearState` sobre `students/<email>`. Si Firebase no está configurado (dev), usa `localStorage`. En producción los errores de Firestore **se propagan** (no se cae a localStorage en silencio).
+- `progress.ts`: `commit()` hace **actualización optimista** (`$state` primero) y luego `saveState`; expone `$saveStatus` (`idle|saving|saved|error`) y `$loadError`.
+- UI: indicador de guardado en el header (`SaveStatus`), estados de carga en tarjetas de ejercicio/quiz, y mensaje de error de carga con botón "Reintentar".
+- Reglas de seguridad Firestore: `request.auth.token.email == <docId> && email_verified == true`.
 
 ## 5. Plan de pruebas
 
@@ -201,12 +203,12 @@ export async function completeLoginIfLink() {
 
 | Riesgo | Impacto | Mitigación |
 |--------|---------|------------|
-| Enlaces de Firebase llegan a spam/cuarentena del correo institucional | Usuarios no pueden entrar | Probar con cuentas institucionales reales (idealmente de los 3 dominios: `@duocuc.cl`, `@profesor.duoc.cl`, `@duoc.cl`) en Fase 5; instrucciones visibles ("revisa spam") + botón reenviar; si la cuarentena de Exchange los bloquea, pedir al docente solicitar lista blanca del remitente o configurar dominio/plantilla de correo propio en Firebase. |
-| Estudiante abre el enlace en otro dispositivo/navegador | Confusión, avance "perdido" | Prompt de confirmación de correo (flujo estándar Firebase) + aviso claro de que el avance vive en el navegador donde estudia. |
-| Cuota gratuita de Firebase (envíos de email-link diarios) | Bloqueo temporal de logins masivos | La sesión es persistente (un enlace por estudiante, no por visita); cuota Spark suficiente para un curso; monitorear en consola Firebase. |
+| ~~Enlaces de Firebase a spam/cuarentena institucional~~ **(materializado)** | Usuarios no podían entrar | **Resuelto:** se reemplazó *Email link* por **Google OAuth**; los correos Duoc UC son cuentas Google, login sin correos de por medio. |
+| Cuota gratuita de Firebase (lecturas/escrituras Firestore) | Bloqueo temporal | Volumen de un curso muy por debajo de la cuota Spark; cada respuesta es una escritura pequeña; monitorear en consola Firebase. |
+| Firestore inaccesible (offline) al cargar/guardar | Avance no carga o no guarda | Mensaje de error con "Reintentar" al cargar; indicador "Sin guardar — revisa tu conexión" al escribir; actualización optimista mantiene el dato en memoria para reintento. |
 | Logo oficial no disponible | Bloquea identidad visual | Solicitar al docente/Comunicación y Marketing; mientras tanto placeholder de texto "Duoc UC" con tipografía correcta, nunca un logo redibujado. |
-| localStorage borrado por el estudiante | Pierde avance | Advertir en UI ("tu avance vive en este navegador"); export parcial JSON de respaldo (`descargar respaldo`) opcional en página resumen. |
-| Manipulación de localStorage para inflar nota | Nota fraudulenta | Hash de integridad + timestamps por respuesta en PDF; documentar al profesor que el informe es evidencia disuasiva, no criptográficamente infalible. |
+| Reglas de Firestore mal configuradas | Fuga o pérdida de datos entre estudiantes | Reglas que restringen cada documento a su dueño (`email == docId && email_verified`); probar acceso cruzado denegado. |
+| Manipulación del cliente para inflar nota | Nota fraudulenta | Hash de integridad + timestamps por respuesta en el PDF; documentar al profesor que el informe es evidencia disuasiva, no criptográficamente infalible. |
 | Tildes/ñ en jsPDF | PDF ilegible | Probar temprano (Fase 7); si falla, embeber fuente Lato TTF en jsPDF. |
 | Ambigüedad en respuestas de ejercicios | Frustración del estudiante | Patrones tolerantes + pistas + revisar con piloto (un estudiante real prueba la Unidad 1 al final de Fase 4). |
 

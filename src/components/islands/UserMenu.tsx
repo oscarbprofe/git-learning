@@ -37,9 +37,10 @@ export default function UserMenu() {
             type="button"
             role="menuitem"
             onClick={async () => {
-              if (confirm('¿Cerrar sesión? Tu avance queda guardado en este navegador.')) {
+              if (confirm('¿Cerrar sesión? Tu avance queda guardado en tu cuenta.')) {
                 await signOut();
                 setOpen(false);
+                window.location.href = '/';
               }
             }}
           >

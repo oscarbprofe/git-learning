@@ -20,7 +20,7 @@ interface Props {
 }
 
 export default function SummaryView({ catalog }: Props) {
-  const { user, ready } = useInitializedProgress();
+  const { user, ready, error } = useInitializedProgress();
   const summaries = useStore($summaries);
   const totalScore = useStore($totalScore);
   const totalMax = useStore($totalMax);
@@ -31,6 +31,16 @@ export default function SummaryView({ catalog }: Props) {
   const [exporting, setExporting] = useState(false);
 
   if (!user) return <LoginCard />;
+  if (error) {
+    return (
+      <div role="alert" style="text-align:center;padding:2rem;background:#ffebee;color:#c62828;border-radius:12px;">
+        <p>⚠ {error}</p>
+        <button type="button" class="btn btn-primary" onClick={() => location.reload()}>
+          Reintentar
+        </button>
+      </div>
+    );
+  }
   if (!ready || !state) return <p class="loading">Cargando…</p>;
 
   const nota = pctToNota(pct);
@@ -41,7 +51,7 @@ export default function SummaryView({ catalog }: Props) {
     setExporting(true);
     try {
       const { exportReport } = await import('../../lib/pdf');
-      const integrityHash = await computeIntegrity({ ...state, integrity: undefined });
+      const integrityHash = await computeIntegrity(state);
       await exportReport({
         state,
         metas: summaries.map((s) => s.meta),
@@ -56,14 +66,14 @@ export default function SummaryView({ catalog }: Props) {
     }
   }
 
-  function handleReset() {
+  async function handleReset() {
     if (
       confirm(
         '¿Reiniciar todo tu avance? Esta acción no se puede deshacer. Tu cuenta no cambia, sólo tus respuestas guardadas.',
       ) &&
-      confirm('Confirmación final: se borrarán todas las respuestas guardadas en este navegador.')
+      confirm('Confirmación final: se borrarán todas las respuestas guardadas.')
     ) {
-      clearProgress();
+      await clearProgress();
       location.reload();
     }
   }

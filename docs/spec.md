@@ -4,15 +4,17 @@
 **Institución:** Duoc UC — Escuela de Informática y Telecomunicaciones
 **Audiencia:** Estudiantes de primer año de Ingeniería Informática
 **Fecha:** Junio 2026
-**Versión:** 1.0
+**Versión:** 1.1
+
+> **Cambios v1.1 respecto de v1.0:** la persistencia migró de `localStorage` a **Cloud Firestore** (avance sincronizado entre dispositivos, asociado a la cuenta). La autenticación pasó de *Email link* a **Google OAuth** (los correos institucionales Duoc UC son cuentas Google Workspace; el enlace por correo quedaba bloqueado por la cuarentena de correo institucional). La **compleción de una unidad** ahora depende únicamente de responder **todos los ejercicios + todo el quiz** (se eliminó el requisito de "secciones visitadas").
 
 ---
 
 ## 1. Visión general
 
-Sitio web estático (Astro) que guía al estudiante a través de un **viaje de aprendizaje de Git** estructurado en unidades progresivas (de menos a más complejidad). Cada unidad combina teoría, ejemplos básicos y de uso real, ejercicios prácticos y preguntas de selección múltiple. Todo el avance y las respuestas quedan persistidas en `localStorage` y el estudiante puede exportar **en cualquier momento** un **informe PDF** con su detalle de respuestas, puntaje (0–100) y **nota (1.0–7.0, exigencia 60%) hasta el punto que alcanzó a estudiar**, que entrega al profesor como evidencia del curso.
+Sitio web estático (Astro) que guía al estudiante a través de un **viaje de aprendizaje de Git** estructurado en unidades progresivas (de menos a más complejidad). Cada unidad combina teoría, ejemplos básicos y de uso real, ejercicios prácticos y preguntas de selección múltiple. Todo el avance y las respuestas quedan persistidas en **Cloud Firestore** (asociadas a la cuenta del estudiante, sincronizadas entre dispositivos) y el estudiante puede exportar **en cualquier momento** un **informe PDF** con su detalle de respuestas, puntaje (0–100) y **nota (1.0–7.0, exigencia 60%) hasta el punto que alcanzó a estudiar**, que entrega al profesor como evidencia del curso.
 
-El acceso requiere **verificación del correo institucional** (dominios `@duocuc.cl`, `@profesor.duoc.cl` o `@duoc.cl`) mediante enlace de inicio de sesión enviado al buzón del usuario (Firebase Authentication, sin backend propio).
+El acceso requiere **verificación del correo institucional** (dominios `@duocuc.cl`, `@profesor.duoc.cl` o `@duoc.cl`) mediante **inicio de sesión con Google** (Firebase Authentication, sin backend propio).
 
 ## 2. Objetivos
 
@@ -20,7 +22,7 @@ El acceso requiere **verificación del correo institucional** (dominios `@duocuc
 |---|----------|
 | O1 | Enseñar Git desde cero hasta colaboración real (GitHub) a estudiantes sin experiencia previa. |
 | O2 | Evaluar el aprendizaje con ejercicios verificables y preguntas teóricas auto-corregidas. |
-| O3 | Persistir todo el avance localmente (sin backend propio) y permitir exportar un informe PDF formal en cualquier momento del viaje. |
+| O3 | Persistir todo el avance en la nube (Cloud Firestore, sin backend propio) asociado a la cuenta del estudiante, y permitir exportar un informe PDF formal en cualquier momento del viaje. |
 | O4 | Calcular nota chilena 1.0–7.0 con exigencia 60% a partir del puntaje 0–100. |
 | O5 | Garantizar identidad del usuario verificando la posesión de un buzón institucional Duoc UC (`@duocuc.cl`, `@profesor.duoc.cl` o `@duoc.cl`). |
 | O6 | Respetar estrictamente el Manual de Identidad Corporativa Duoc UC 2024. |
@@ -28,16 +30,16 @@ El acceso requiere **verificación del correo institucional** (dominios `@duocuc
 ## 3. Alcance
 
 ### Incluido
-- Sitio estático Astro con islas interactivas (sin backend propio; Firebase Authentication como único servicio externo).
+- Sitio estático Astro con islas interactivas (sin backend propio; Firebase Authentication + Cloud Firestore como servicios externos gestionados).
 - 8 unidades de aprendizaje + página de inicio + página de resumen/exportación.
-- Autenticación por enlace de correo (Firebase Auth, passwordless) con restricción a los dominios institucionales `@duocuc.cl`, `@profesor.duoc.cl` y `@duoc.cl`.
-- Persistencia completa en `localStorage` (respuestas, intentos, timestamps, progreso).
-- Indicador de progreso global y por unidad.
+- Autenticación con **Google** (Firebase Auth) con restricción a los dominios institucionales `@duocuc.cl`, `@profesor.duoc.cl` y `@duoc.cl`.
+- Persistencia completa en **Cloud Firestore** (respuestas, intentos, timestamps, progreso), asociada a la cuenta y sincronizada entre dispositivos.
+- Indicador de progreso global y por unidad, e indicador de estado de guardado en la nube.
 - Exportación de informe PDF cliente-side **en cualquier momento** (parcial o final) con detalle, puntaje y nota hasta el punto alcanzado.
 - Diseño responsivo conforme al manual de marca Duoc UC.
 
 ### Excluido (fuera de alcance v1)
-- Backend propio, base de datos o sincronización entre dispositivos (el avance vive en el navegador del estudiante).
+- Backend propio o lógica de servidor (Firestore se accede directamente desde el cliente con reglas de seguridad).
 - Login con Microsoft Entra ID (descartado: requiere App Registration en el Azure de Duoc UC, al cual no hay acceso).
 - Terminal Git real embebida (los ejercicios se validan contra la entrada del estudiante, no ejecutan Git).
 - Panel del profesor (la evidencia es el PDF entregado).
@@ -54,7 +56,7 @@ El acceso requiere **verificación del correo institucional** (dominios `@duocuc
 
 ## 5. Currículum: unidades del viaje
 
-Las unidades van **de menos a más**. Cada unidad contiene 4 secciones obligatorias: **Conceptos** (teoría), **Ejemplos** (básicos + caso de uso real), **Ejercicios** (prácticos, respuesta escrita validada) y **Quiz** (selección múltiple).
+Las unidades van **de menos a más**. Cada unidad contiene 4 secciones: **Conceptos** (teoría) y **Ejemplos** (básicos + caso de uso real) como material de lectura, y **Ejercicios** (prácticos, respuesta escrita validada) y **Quiz** (selección múltiple) como ítems evaluados. Solo Ejercicios y Quiz cuentan para completar la unidad y para el puntaje.
 
 | # | Unidad | Contenidos clave | Ejercicios | Preguntas quiz | Puntos |
 |---|--------|------------------|-----------|----------------|--------|
@@ -75,8 +77,8 @@ Las unidades van **de menos a más**. Cada unidad contiene 4 secciones obligator
 4. **Quiz** — preguntas de selección múltiple (4 alternativas, 1 correcta). **Un solo intento** por pregunta; feedback inmediato con explicación de la alternativa correcta.
 
 ### Reglas de navegación
-- Las unidades se desbloquean secuencialmente: la unidad N+1 se habilita al **completar** la unidad N (todas sus secciones visitadas y todos los ejercicios/quiz respondidos).
-- Dentro de una unidad la navegación es libre entre sus 4 secciones.
+- Las unidades se desbloquean secuencialmente: la unidad N+1 se habilita al **completar** la unidad N, entendiéndose por completar **responder todos los ejercicios y todas las preguntas del quiz** de esa unidad. La teoría (Conceptos) y los Ejemplos son material de apoyo de lectura libre y **no** cuentan como ítems a completar.
+- Dentro de una unidad la navegación es libre entre sus secciones.
 - El estudiante puede revisar unidades completadas en modo lectura (respuestas ya enviadas quedan congeladas).
 
 ## 6. Evaluación y nota
@@ -97,9 +99,9 @@ si pct <  60:  nota = 1.0 + 3.0 * pct / 60
 - **Nota hasta el punto alcanzado:** el puntaje siempre se calcula sobre el **total de 100 puntos del curso**; todo ítem no respondido vale 0. Así, la nota refleja exactamente lo que el estudiante alcanzó a estudiar al momento de consultarla o exportarla (ej.: completó las unidades 1–4 sin errores = 48 puntos → nota 3.4).
 - La nota se rotula **provisoria** mientras el viaje no esté 100% completo y **final** al completarlo; la fórmula es la misma en ambos casos.
 
-## 7. Autenticación (verificación de correo institucional — Firebase Auth)
+## 7. Autenticación (verificación de correo institucional — Firebase Auth + Google)
 
-**Contexto de la decisión:** no existe acceso al Azure/Entra ID de Duoc UC, por lo que el login Microsoft real queda descartado. Se reemplaza por **autenticación passwordless con enlace por correo** (Firebase Authentication): garantiza que quien accede **controla un buzón institucional Duoc UC** — la misma garantía de identidad que daba el login Microsoft — sin escribir ni hospedar backend propio (solo SDK cliente + servicio gestionado gratuito).
+**Contexto de la decisión:** no existe acceso al Azure/Entra ID de Duoc UC, por lo que el login Microsoft real queda descartado. La primera implementación usó *Email link (passwordless)*, pero **la cuarentena del correo institucional Duoc UC bloquea los enlaces de Firebase**, dejando a los usuarios sin poder entrar. Dado que los correos institucionales Duoc UC son **cuentas Google Workspace**, se adopta **inicio de sesión con Google** (Firebase Authentication): el estudiante elige su cuenta `@duocuc.cl` en el popup de Google y queda autenticado al instante, sin correos de por medio. Garantiza que quien accede **controla una cuenta institucional Duoc UC** — misma garantía de identidad — sin backend propio (solo SDK cliente + servicio gestionado gratuito).
 
 **Dominios admitidos (allowlist):**
 
@@ -112,35 +114,35 @@ si pct <  60:  nota = 1.0 + 3.0 * pct / 60
 La validación compara el **dominio exacto** del correo (lo que sigue al `@`) contra la allowlist — nunca un `endsWith` simple, que aceptaría dominios ajenos como `otraduoc.cl`.
 
 ### Flujo
-1. Landing: el usuario ingresa su **nombre completo** y su **correo institucional**.
-2. Validación cliente: el dominio del correo debe estar en la allowlist (si no, se bloquea el envío con mensaje "Debes usar tu correo institucional Duoc UC (@duocuc.cl, @profesor.duoc.cl o @duoc.cl)").
-3. Se envía un **enlace de inicio de sesión** al buzón (`sendSignInLinkToEmail`). UI de espera con instrucciones: revisar bandeja/spam, abrir el enlace **en este mismo navegador**.
-4. El estudiante abre el enlace desde su correo institucional → `signInWithEmailLink` completa la sesión. El nombre se guarda en el perfil (`updateProfile`) en el primer acceso.
-5. Re-validación post-login del dominio del correo autenticado; si no cumple → `signOut` inmediato.
+1. Landing: el usuario pulsa **"Continuar con Google"**.
+2. Se abre el popup de Google (`signInWithPopup` + `GoogleAuthProvider`); el usuario elige su cuenta.
+3. Re-validación post-login del **dominio exacto** del correo autenticado contra la allowlist; si no cumple → `signOut` inmediato y mensaje "Solo se aceptan correos institucionales Duoc UC (@duocuc.cl, @profesor.duoc.cl o @duoc.cl)".
+4. El `displayName` y `email` provienen de la cuenta Google (verificados); se usan en header, ruta del documento Firestore y PDF.
 
 | Requisito | Detalle |
 |-----------|---------|
-| Librería | `firebase/auth` (SDK web modular, solo cliente). |
-| Proveedor | Firebase Authentication, método *Email link (passwordless)*. Plan gratuito Spark. |
-| Restricción de dominio | Allowlist `duocuc.cl` / `profesor.duoc.cl` / `duoc.cl` con comparación exacta de dominio; se aplica doble: antes de enviar el enlace y tras completar el login. |
-| Garantía de identidad | Posesión demostrada del buzón institucional: solo quien puede leer el correo Duoc UC recibe el enlace de acceso. |
-| Datos usados | `displayName` (ingresado y guardado en perfil) y `email` verificados: header, clave de `localStorage` y PDF. |
+| Librería | `firebase/auth` (SDK web modular, solo cliente; import dinámico). |
+| Proveedor | Firebase Authentication, método **Google** (`GoogleAuthProvider` + `signInWithPopup`). Plan gratuito Spark. |
+| Restricción de dominio | Allowlist `duocuc.cl` / `profesor.duoc.cl` / `duoc.cl` con comparación exacta de dominio, aplicada tras completar el login. |
+| Garantía de identidad | Posesión demostrada de la cuenta Google institucional Duoc UC. |
+| Datos usados | `displayName` y `email` de la cuenta Google: header, ruta `students/<email>` en Firestore y PDF. |
 | Gate de acceso | Sin sesión válida solo se ve la landing de login. Unidades y exportación requieren sesión. |
-| Persistencia de sesión | Persistencia local de Firebase (IndexedDB): la sesión sobrevive a cierres del navegador; no se re-solicita el enlace en cada visita. |
-| Caso borde | Si el enlace se abre en otro navegador/dispositivo, Firebase solicita re-confirmar el correo; el avance vive en el navegador donde se estudia (se advierte en UI). |
+| Persistencia de sesión | Persistencia local de Firebase (`browserLocalPersistence`): la sesión sobrevive a cierres del navegador. |
 | Modo desarrollo | `PUBLIC_AUTH_DISABLED=true` permite trabajar sin proyecto Firebase (usuario ficticio `dev@duocuc.cl`); nunca activa en producción. |
 
-> **Dependencia externa (autogestionada):** crear un proyecto Firebase gratuito con cuenta propia, habilitar el método *Email link* y registrar el dominio del sitio desplegado en *Authorized domains*. No requiere ninguna gestión con TI de Duoc UC.
+> **Dependencia externa (autogestionada):** crear un proyecto Firebase gratuito con cuenta propia, habilitar el proveedor **Google**, crear la base **Cloud Firestore** con sus reglas de seguridad y registrar el dominio del sitio desplegado en *Authorized domains*. No requiere ninguna gestión con TI de Duoc UC.
 
 ### Alternativas evaluadas y descartadas
-- **App Entra multitenant propia** (mantendría el botón "Iniciar sesión con Microsoft"): alto riesgo de que el tenant de Duoc UC bloquee el consentimiento de usuarios a aplicaciones de terceros — destrabarlo exige un admin de Duoc UC, justo el acceso que no se tiene.
+- **Email link (passwordless)**: implementado inicialmente, pero los enlaces de Firebase quedan retenidos por la cuarentena del correo institucional Duoc UC; los usuarios nunca reciben el enlace. Descartado a favor de Google OAuth.
+- **App Entra multitenant propia** (botón "Iniciar sesión con Microsoft"): alto riesgo de que el tenant de Duoc UC bloquee el consentimiento a aplicaciones de terceros — destrabarlo exige un admin de Duoc UC, justo el acceso que no se tiene.
 - **Declaración de identidad sin verificación** (escribir nombre/correo sin comprobar): no garantiza identidad; descartada.
 
-## 8. Persistencia en localStorage
+## 8. Persistencia en Cloud Firestore
 
-Clave raíz: `gitchallenge:v1:<email>` (aislada por cuenta). Esquema versionado con migraciones.
+Colección `students`, un documento por estudiante con ID = correo institucional en minúsculas: **`students/<email>`**. El avance se sincroniza entre dispositivos (no vive en el navegador). En **modo desarrollo** (sin Firebase configurado) se usa `localStorage` con clave `gitchallenge:v1:<email>` como respaldo, mismo esquema.
 
 ```jsonc
+// Documento students/<email>
 {
   "version": 1,
   "student": { "name": "...", "email": "...@duocuc.cl" },
@@ -149,32 +151,33 @@ Clave raíz: `gitchallenge:v1:<email>` (aislada por cuenta). Esquema versionado 
   "completedAt": null,                  // ISO-8601 al terminar el viaje
   "units": {
     "u1": {
-      "sectionsVisited": ["conceptos", "ejemplos"],
       "exercises": {
         "u1-e1": { "answer": "git config --global user.name \"Ana\"",
-                    "attempts": 2, "correct": true, "score": 2.1,
+                    "attempts": 2, "correct": true, "score": 2.1, "maxScore": 2,
                     "answeredAt": "ISO-8601" }
       },
       "quiz": {
-        "u1-q1": { "selected": "b", "correct": true, "score": 1,
+        "u1-q1": { "selected": "b", "correct": true, "score": 1, "maxScore": 1,
                     "answeredAt": "ISO-8601" }
       },
-      "completedAt": "ISO-8601 | null"
+      "completedAt": "ISO-8601 | null"  // se setea al responder todos los ejercicios + quiz
     }
-  },
-  "integrity": "sha256-hex"             // hash del payload, recalculado en cada escritura
+  }
 }
 ```
 
-- Escritura inmediata en cada respuesta (sin botón "guardar").
-- `integrity`: SHA-256 (Web Crypto) del contenido + sal fija de build; se re-verifica al cargar y al exportar; si no calza se marca el informe como "datos alterados". Disuasivo, no infalible (se documenta como tal).
-- Botón "Reiniciar mi avance" con doble confirmación (borra solo la clave del usuario actual).
+- **Escritura inmediata** en cada respuesta (sin botón "guardar"), con **actualización optimista**: la UI refleja el cambio al instante y luego se confirma la escritura en Firestore.
+- **Feedback de guardado** en el header: indicador "Guardando… / Guardado / Sin guardar — revisa tu conexión".
+- **Manejo de error de carga**: si Firestore es inaccesible al iniciar, se muestra un mensaje con botón "Reintentar" y **no** se crea un estado vacío (evita sobrescribir datos existentes).
+- **Reglas de seguridad de Firestore**: cada estudiante solo puede leer/escribir su propio documento (`request.auth.token.email == <docId>` y `email_verified == true`).
+- `integrity` (sello de verificación del PDF): SHA-256 (Web Crypto) del payload + sal fija; se calcula **al exportar** y se imprime truncado en el pie del informe como evidencia disuasiva (no infalible; se documenta como tal). Ya no se almacena en el documento.
+- Botón "Reiniciar mi avance" con doble confirmación (borra solo el documento del usuario actual).
 
 ## 9. Indicador de progreso
 
-- **Header persistente:** barra de progreso global (% de ítems respondidos sobre el total: secciones visitadas + ejercicios + quiz) con texto "Llevas X% — te faltan N actividades".
+- **Header persistente:** barra de progreso global (% de ítems respondidos sobre el total: ejercicios + quiz de todas las unidades) con texto "Llevas X% — te faltan N actividades", e indicador de estado de guardado en la nube.
 - **Mapa del viaje (home):** las 8 unidades como ruta/camino con estados: 🔒 bloqueada · ▶ en curso (con % interno) · ✓ completada (con puntaje obtenido/total).
-- **Dentro de la unidad:** stepper de las 4 secciones con check por sección y contador "Ejercicio 2 de 4".
+- **Dentro de la unidad:** indicador de progreso de la unidad con contadores "Ejercicios X/N" y "Quiz X/M" y badge "Unidad completada" al cerrar todos los ítems.
 - **Página resumen:** tabla por unidad (puntaje, %), puntaje global, nota provisoria/final y CTA de exportación **siempre habilitado** (genera informe parcial o final según avance).
 
 ## 10. Exportación a PDF
@@ -234,14 +237,14 @@ Regla del manual: para gráficas de escuelas se usa el color representativo de l
 | Rendimiento | Sitio estático; JS solo en islas (auth, quiz, ejercicios, progreso, PDF). Lighthouse ≥ 90. |
 | Idioma | 100% español de Chile. |
 | Navegadores | Últimas 2 versiones de Chrome/Edge/Firefox/Safari. |
-| Privacidad | Las respuestas y el avance nunca salen del navegador; a Firebase solo viajan correo y nombre para autenticación. Sin analytics. |
+| Privacidad | El avance (respuestas, puntajes, timestamps) se guarda en Cloud Firestore asociado a la cuenta del estudiante; a Firebase Auth viajan correo y nombre de la cuenta Google. Reglas de Firestore garantizan que cada estudiante solo accede a su propio documento. Sin analytics. |
 | Despliegue | Build estático (`astro build`) desplegable en GitHub Pages / Netlify / Vercel / Firebase Hosting. HTTPS obligatorio (requisito Firebase Auth). |
 
 ## 13. Criterios de aceptación (resumen)
 
-1. Un usuario sin sesión no puede acceder a ninguna unidad; solo se envía enlace de acceso a correos `@duocuc.cl`, `@profesor.duoc.cl` o `@duoc.cl` (dominio exacto) y un login con cualquier otro dominio se cierra de inmediato. El acceso exige haber abierto el enlace recibido en el buzón institucional.
-2. Las unidades se desbloquean en orden y el progreso sobrevive a recargas y cierres del navegador.
-3. Cada respuesta (ejercicio o quiz) queda en `localStorage` con timestamp e intentos.
+1. Un usuario sin sesión no puede acceder a ninguna unidad; solo inician sesión cuentas Google con dominio exacto `@duocuc.cl`, `@profesor.duoc.cl` o `@duoc.cl`, y un login con cualquier otro dominio se cierra de inmediato.
+2. Las unidades se desbloquean en orden (al responder todos los ejercicios + quiz de la anterior) y el progreso, guardado en Firestore, sobrevive a recargas, cierres de navegador y cambios de dispositivo.
+3. Cada respuesta (ejercicio o quiz) queda en Firestore con timestamp e intentos, con confirmación visible de guardado.
 4. La exportación funciona **en cualquier punto del viaje**: genera un PDF con identidad Duoc UC, detalle de lo respondido, puntaje 0–100 (no respondido = 0) y nota 1.0–7.0 correcta según fórmula de exigencia 60% (verificada con los casos: 0→1.0, 60→4.0, 100→7.0). Si el viaje está incompleto, el PDF queda rotulado como informe parcial con el % de avance; si está completo, como informe final.
 5. La UI usa exclusivamente la paleta y tipografías del manual; logo con área de reserva y footer con `duoc.cl` + acreditación presentes en sitio y PDF.
 6. El sitio compila estático con Astro y funciona en móvil y escritorio.

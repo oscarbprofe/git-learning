@@ -8,9 +8,9 @@ interface Props {
 }
 
 export default function UnitNav({ unitSlug, order }: Props) {
-  const { user, ready } = useInitializedProgress();
+  const { user, ready, error } = useInitializedProgress();
   const summaries = useStore($summaries);
-  if (!user || !ready) return null;
+  if (!user || !ready || error) return null;
 
   const current = summaries.find((s) => s.meta.slug === unitSlug);
   const next = summaries.find((s) => s.meta.order === order + 1);
