@@ -1,0 +1,141 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Callout from '../components/astro/Callout.astro';
+---
+
+<BaseLayout title="Unidad 0: Antes de empezar — Git Challenge" description="Cómo funciona el viaje Git Challenge: estructura, intentos y evaluación.">
+  <div class="container intro-container">
+    <div class="intro-head">
+      <a href="/" class="back-link">← Volver al mapa del viaje</a>
+      <div class="intro-meta">
+        <span class="intro-num">Unidad 0 de 8</span>
+        <span aria-hidden="true">·</span>
+        <span>Informativa (no se evalúa)</span>
+      </div>
+    </div>
+    <h1 class="intro-title">Antes de empezar</h1>
+    <p class="intro-desc">
+      Cómo está armado el viaje, cómo se responde cada actividad y cómo se calcula tu nota.
+      Léela una vez y avanza tranquilo.
+    </p>
+
+    <article class="prose intro-body">
+      <h2>El viaje: 8 unidades progresivas</h2>
+      <p>
+        Git Challenge son <strong>8 unidades</strong> que van de menos a más. Cada unidad
+        tiene la misma estructura:
+      </p>
+      <ul>
+        <li><strong>Conceptos</strong> — la teoría explicada en lenguaje cercano, con diagramas.</li>
+        <li><strong>Ejemplos</strong> — casos básicos y de uso real para ver Git en acción.</li>
+        <li><strong>Ejercicios</strong> — escribes comandos de Git y se validan automáticamente.</li>
+        <li><strong>Quiz</strong> — preguntas de selección múltiple para afianzar la teoría.</li>
+      </ul>
+      <p>
+        Las unidades se <strong>desbloquean en orden</strong>: la siguiente se habilita cuando
+        completas <strong>todos los ejercicios y todas las preguntas</strong> de la actual. La
+        teoría y los ejemplos son lectura libre y no es obligatorio "marcarlos".
+      </p>
+
+      <h2>Cómo se responde cada actividad</h2>
+
+      <Callout type="warn" title="Cada elemento se cierra y queda congelado">
+        Lo más importante: <strong>una vez que cierras un ejercicio o respondes una pregunta,
+        queda guardado y no puedes rehacerlo</strong> para mejorar la nota. Respóndelos con
+        calma, no a la rápida.
+      </Callout>
+
+      <p><strong>Ejercicios</strong> (escribir un comando):</p>
+      <ul>
+        <li>Tienes <strong>hasta 3 intentos</strong> por ejercicio.</li>
+        <li>El puntaje baja con cada intento: <strong>100 % / 70 % / 40 %</strong> del valor del ejercicio.</li>
+        <li>Tras un fallo recibes una <strong>pista</strong>. Si aciertas o agotas los 3 intentos, el ejercicio se cierra.</li>
+      </ul>
+
+      <p><strong>Quiz</strong> (selección múltiple):</p>
+      <ul>
+        <li><strong>Un solo intento</strong> por pregunta.</li>
+        <li>Recibes <strong>feedback inmediato</strong> con la explicación de la alternativa correcta.</li>
+        <li>Correcta = puntaje completo; incorrecta = 0. No hay segundo intento.</li>
+      </ul>
+
+      <h2>Cómo se evalúa</h2>
+      <p>
+        El curso se mide sobre <strong>100 puntos</strong>. Esos 100 puntos son la referencia
+        para tu nota:
+      </p>
+      <ul>
+        <li><strong>60 puntos → nota 4.0</strong> (aprobado, exigencia 60 %).</li>
+        <li><strong>100 puntos → nota 7.0</strong> (máximo).</li>
+      </ul>
+
+      <Callout type="tip" title="Equivocarte no te quita el 7.0">
+        Cada unidad reparte <strong>más puntos de los necesarios</strong> para llegar a 100.
+        Es decir, el total disponible en el viaje <strong>supera el 100 %</strong> a propósito:
+        así puedes fallar en algunos ítems y <strong>aún así alcanzar el puntaje máximo</strong>.
+        Una vez que llegas a 100 puntos ya tienes un 7.0, aunque sigas sumando.
+      </Callout>
+
+      <h3>Conversión de puntaje a nota (escala chilena, exigencia 60 %)</h3>
+      <p>La fórmula que se usa es:</p>
+      <pre><code>si puntaje &gt;= 60:  nota = 4.0 + 3.0 × (puntaje − 60) / 40
+si puntaje &lt;  60:  nota = 1.0 + 3.0 × puntaje / 60</code></pre>
+
+      <table>
+        <thead>
+          <tr><th>Puntaje (de 100)</th><th>Nota</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>0</td><td>1.0</td></tr>
+          <tr><td>30</td><td>2.5</td></tr>
+          <tr><td>60</td><td>4.0</td></tr>
+          <tr><td>80</td><td>5.5</td></tr>
+          <tr><td>100 o más</td><td>7.0</td></tr>
+        </tbody>
+      </table>
+
+      <p>
+        La nota se muestra como <strong>provisoria</strong> mientras no termines el viaje, y
+        como <strong>final</strong> al completarlo. Todo ítem que no respondas vale 0, así que
+        la nota refleja exactamente lo que alcanzaste a estudiar.
+      </p>
+
+      <h2>Tu avance y el informe</h2>
+      <p>
+        Ingresas con tu cuenta institucional Duoc UC y <strong>tu avance se guarda en tu
+        cuenta</strong>: te sigue aunque cambies de dispositivo. En cualquier momento puedes
+        descargar un <strong>informe en PDF</strong> con tu detalle de respuestas, puntaje y
+        nota, para entregar a tu profesor.
+      </p>
+
+      <div class="cta-row">
+        <a href="/unidades/u1" class="btn btn-primary">Comenzar la Unidad 1 →</a>
+        <a href="/" class="btn btn-secondary">Volver al mapa</a>
+      </div>
+    </article>
+  </div>
+</BaseLayout>
+
+<style>
+  .intro-container { padding: var(--sp-6) var(--sp-5); max-width: 60rem; }
+  .intro-head {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: var(--sp-3); margin-bottom: var(--sp-3); flex-wrap: wrap;
+  }
+  .back-link { color: var(--color-text-soft); text-decoration: none; font-size: var(--fs-sm); font-weight: 700; }
+  .back-link:hover { color: var(--duoc-negro); }
+  .intro-meta { display: inline-flex; align-items: center; gap: var(--sp-2); font-size: var(--fs-sm); color: var(--color-text-soft); }
+  .intro-num {
+    background: var(--duoc-amarillo); color: var(--duoc-negro);
+    padding: 0.15rem 0.6rem; border-radius: 999px; font-weight: 700;
+  }
+  .intro-title { font-size: var(--fs-3xl); }
+  .intro-desc { font-size: var(--fs-md); color: var(--color-text-soft); margin-bottom: var(--sp-5); }
+  .intro-body { margin-top: var(--sp-5); }
+  .intro-body pre {
+    background: var(--duoc-negro-80); color: var(--duoc-blanco);
+    padding: var(--sp-3) var(--sp-4); border-radius: var(--radius-md);
+    overflow-x: auto; font-size: var(--fs-sm);
+  }
+  .cta-row { display: flex; gap: var(--sp-3); flex-wrap: wrap; margin-top: var(--sp-6); }
+</style>
